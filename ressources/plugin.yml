@@ -1,0 +1,12 @@
+name: SBShop
+version: '1.0'
+author: Ichii
+main: fr.entasia.sbshop.Main
+depend: [Libraries, SkyCore]
+
+commands:
+  shop:
+    aliases: [shops, boutique]
+
+  shopreload:
+    aliases: [reloadshop]

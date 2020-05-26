@@ -1,0 +1,14 @@
+global_modifier: 1
+shops:
+  blocks:
+    price-modifier: 1
+    items:
+      1:
+        price-modifier: 1
+        type: GRASS
+        buy: 120
+        sell: 120
+
+  ore:
+    price-modifier: 1
+    items: {}
