@@ -1,7 +1,7 @@
 package fr.entasia.sbshop;
 
-import fr.entasia.apis.ItemUtils;
-import fr.entasia.apis.ServerUtils;
+import fr.entasia.apis.utils.ItemUtils;
+import fr.entasia.apis.utils.ServerUtils;
 import fr.entasia.apis.menus.MenuClickEvent;
 import fr.entasia.apis.menus.MenuCreator;
 import fr.entasia.apis.menus.MenuFlag;
@@ -119,7 +119,6 @@ public class MenusManager {
 		}
 	};
 
-
 	public static void openSubShop(Player p, SubShop sub, int pagen) {
 		Inventory inv = subShopMenu.createInv(6, "§5Shop>> " + sub.title + " §5Page: §6 " + (pagen+1), new MenuLink(sub, pagen));
 
@@ -139,7 +138,7 @@ public class MenusManager {
 		}
 
 		int it=0;
-		for(ShopItem sitem : sub.items.subList(pagen*36, max)){
+		for(ShopItem sitem : sub.items.subList(min, max)){
 
 			item = new ItemStack(sitem.type, 1, sitem.meta);
 			meta = item.getItemMeta();
@@ -172,7 +171,7 @@ public class MenusManager {
 			smeta = (SkullMeta)item.getItemMeta();
 			smeta.setDisplayName("§cPage suivante");
 			item.setItemMeta(smeta);
-			ItemUtils.placeSkullAsync(inv, 48, item, "MHF_ArrowRight", Main.main);
+			ItemUtils.placeSkullAsync(inv, 50, item, "MHF_ArrowRight", Main.main);
 		}
 
 		item = new ItemStack(Material.BOOK_AND_QUILL, 1);

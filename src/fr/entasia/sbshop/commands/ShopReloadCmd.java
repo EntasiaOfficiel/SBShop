@@ -13,7 +13,7 @@ public class ShopReloadCmd implements CommandExecutor {
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		if (!(sender instanceof Player)) return false;
 
-		if(sender.hasPermission("admin.shopreload")){
+		if(sender.hasPermission("skyblock.shop.reload")){
 			Main.loadConfig();
 			sender.sendMessage("§aConfiguration rechargée ! (Voir les logs pour erreurs potencielles)");
 		}else sender.sendMessage("§cTu n'as pas accès à cette commande !");
