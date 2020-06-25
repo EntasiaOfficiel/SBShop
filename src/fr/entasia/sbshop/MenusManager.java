@@ -9,6 +9,7 @@ import fr.entasia.sbshop.utils.MenuLink;
 import fr.entasia.sbshop.utils.ShopItem;
 import fr.entasia.sbshop.utils.SubShop;
 import fr.entasia.skycore.apis.BaseAPI;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -92,8 +93,8 @@ public class MenusManager {
 		public void onMenuClick(MenuClickEvent e) {
 			MenuLink ml = (MenuLink)e.data;
 			if (e.slot == 53)openMainShop(e.player);
-			else if (e.slot == 48)openSubShop(e.player, ml.shop, ml.page - 1);
-			else if (e.slot == 50)openSubShop(e.player, ml.shop, ml.page + 1);
+			else if (e.slot == 48 && e.item != null)openSubShop(e.player, ml.shop, ml.page - 1);
+			else if (e.slot == 50 && e.item != null)openSubShop(e.player, ml.shop, ml.page + 1);
 			else if(e.slot<36){
 				ml.item = ml.shop.getItem(e.item.getType(), e.item.getDurability());
 				if(ml.item==null){
@@ -165,8 +166,8 @@ public class MenusManager {
 			item.setItemMeta(smeta);
 			ItemUtils.placeSkullAsync(inv, 48, item, "MHF_ArrowLeft", Main.main);
 		}
-
-		if (sub.items.size() == max) {
+		Bukkit.broadcastMessage(sub.items.size() +  " " + max);
+		if (sub.items.size() > max) {
 			item = new ItemStack(Material.SKULL_ITEM, 1, (short)3);
 			smeta = (SkullMeta)item.getItemMeta();
 			smeta.setDisplayName("§cPage suivante");
@@ -343,4 +344,4 @@ public class MenusManager {
 		p.openInventory(inv);
 		p.playSound(p.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 3.5f, 1.1f);
 	}
-};
+}
