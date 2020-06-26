@@ -107,13 +107,18 @@ public class MenusManager {
 						e.player.closeInventory();
 						ServerUtils.permMsg("errorlog", "§cShop : L'item "+ml.item.type+":"+ml.item.meta+" à un prix invalide !");
 					}
-					if(e.click== MenuClickEvent.ClickType.LEFT && ml.item.getBuyPrice() <= 1000000) openBuyShop(e.player, ml);
-					else if(e.click== MenuClickEvent.ClickType.RIGHT && ml.item.getSellPrice() != 0) openSellShop(e.player, ml);
-					else if (ml.item.getBuyPrice() >= 1000000 || ml.item.getSellPrice() == 0);
-					else{
-						e.player.sendMessage("§cUne erreur s'est produite, contacte un membre du Staff ! (No such action)");
-						e.player.closeInventory();
-						ServerUtils.permMsg("errorlog", "§cShop : Action de click non reconnue !");
+					if (ml.item.metas > 0) {
+
+					}
+					else {
+						if(e.click== MenuClickEvent.ClickType.LEFT && ml.item.getBuyPrice() <= 1000000) openBuyShop(e.player, ml);
+						else if(e.click== MenuClickEvent.ClickType.RIGHT && ml.item.getSellPrice() != 0) openSellShop(e.player, ml);
+						else if (ml.item.getBuyPrice() >= 1000000 || ml.item.getSellPrice() == 0);
+						else{
+							e.player.sendMessage("§cUne erreur s'est produite, contacte un membre du Staff ! (No such action)");
+							e.player.closeInventory();
+							ServerUtils.permMsg("errorlog", "§cShop : Action de click non reconnue !");
+						}
 					}
 				}
 			}
@@ -144,10 +149,15 @@ public class MenusManager {
 			item = new ItemStack(sitem.type, 1, sitem.meta);
 			meta = item.getItemMeta();
 			lore = new ArrayList<>();
-			if (sitem.getBuyPrice() <= 1000000) lore.add("§2Prix : " + sitem.getBuyPrice() + " (Click gauche pour acheter)");
-			else lore.add("§2Achat Impossible");
-			if (sitem.getSellPrice() != 0) lore.add("§2Vente: " + sitem.getSellPrice() + " (Click droit pour vendre)");
-			else lore.add("§2Vente impossible");
+			if (sitem.metas > 0) {
+				lore.add("§2Clique pour voir plus de choix");
+			}
+			else {
+				if (sitem.getBuyPrice() <= 1000000) lore.add("§2Prix : " + sitem.getBuyPrice() + " (Click gauche pour acheter)");
+				else lore.add("§2Achat Impossible");
+				if (sitem.getSellPrice() != 0) lore.add("§2Vente: " + sitem.getSellPrice() + " (Click droit pour vendre)");
+				else lore.add("§2Vente impossible");
+			}
 			meta.setLore(lore);
 			item.setItemMeta(meta);
 			inv.setItem(it, item);
@@ -184,6 +194,14 @@ public class MenusManager {
 
 		p.openInventory(inv);
 		p.playSound(p.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 3.5f, 1.1f);
+	}
+
+	public static MenuCreator metasShopMenu = new MenuCreator(null, null) {
+
+	};
+
+	public static void openMetasShop(Player p, SubShop sub, int pagen) {
+		Inventory inv = metasShopMenu.createInv(4, "§5Shop>> §2Types", new MenuLink(sub, pagen));
 	}
 
 	public static MenuCreator buyShopMenu = new MenuCreator(null, null) {

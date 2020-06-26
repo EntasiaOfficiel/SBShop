@@ -65,6 +65,7 @@ public class Main extends JavaPlugin {
 				sitem.buy = cs2.getInt("buy");
 				sitem.sell = cs2.getInt("sell");
 				sitem.modifier = cs2.getInt("price-modifier", 1);
+				sitem.metas = (short) cs2.getInt("metas");
 
 				if(sitem.type==null)main.getLogger().warning("Erreur sur l'item "+cs.getString("type")+":"+sitem.meta+" : type invalide");
 				else if(sitem.sell>sitem.buy)main.getLogger().warning("Erreur sur l'item "+sitem.type+":"+sitem.meta+" : PRIX DE VENTE PLUS HAUT QUE L'ACHAT");
