@@ -107,8 +107,9 @@ public class MenusManager {
 						e.player.closeInventory();
 						ServerUtils.permMsg("errorlog", "§cShop : L'item "+ml.item.type+":"+ml.item.meta+" à un prix invalide !");
 					}
-					if(e.click== MenuClickEvent.ClickType.LEFT) openBuyShop(e.player, ml);
-					else if(e.click== MenuClickEvent.ClickType.RIGHT) openSellShop(e.player, ml);
+					if(e.click== MenuClickEvent.ClickType.LEFT && ml.item.getBuyPrice() <= 1000000) openBuyShop(e.player, ml);
+					else if(e.click== MenuClickEvent.ClickType.RIGHT && ml.item.getSellPrice() != 0) openSellShop(e.player, ml);
+					else if (ml.item.getBuyPrice() >= 1000000 || ml.item.getSellPrice() == 0);
 					else{
 						e.player.sendMessage("§cUne erreur s'est produite, contacte un membre du Staff ! (No such action)");
 						e.player.closeInventory();
@@ -143,8 +144,10 @@ public class MenusManager {
 			item = new ItemStack(sitem.type, 1, sitem.meta);
 			meta = item.getItemMeta();
 			lore = new ArrayList<>();
-			lore.add("§2Prix : " + sitem.getBuyPrice() + " (Click gauche pour acheter)");
-			lore.add("§2Vente: " + sitem.getSellPrice() + " (Click droit pour vendre)");
+			if (sitem.getBuyPrice() <= 1000000) lore.add("§2Prix : " + sitem.getBuyPrice() + " (Click gauche pour acheter)");
+			else lore.add("§2Achat Impossible");
+			if (sitem.getSellPrice() != 0) lore.add("§2Vente: " + sitem.getSellPrice() + " (Click droit pour vendre)");
+			else lore.add("§2Vente impossible");
 			meta.setLore(lore);
 			item.setItemMeta(meta);
 			inv.setItem(it, item);
@@ -165,7 +168,6 @@ public class MenusManager {
 			item.setItemMeta(smeta);
 			ItemUtils.placeSkullAsync(inv, 48, item, "MHF_ArrowLeft", Main.main);
 		}
-		Bukkit.broadcastMessage(sub.items.size() +  " " + max);
 		if (sub.items.size() > max) {
 			item = new ItemStack(Material.SKULL_ITEM, 1, (short)3);
 			smeta = (SkullMeta)item.getItemMeta();
