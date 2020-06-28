@@ -108,7 +108,7 @@ public class MenusManager {
 						ServerUtils.permMsg("errorlog", "§cShop : L'item "+ml.item.type+":"+ml.item.meta+" à un prix invalide !");
 					}
 					if (ml.item.metas > 0) {
-
+						openMetasShop(e.player, ml);
 					}
 					else {
 						if(e.click== MenuClickEvent.ClickType.LEFT && ml.item.getBuyPrice() <= 1000000) openBuyShop(e.player, ml);
@@ -196,12 +196,85 @@ public class MenusManager {
 		p.playSound(p.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 3.5f, 1.1f);
 	}
 
-	public static MenuCreator metasShopMenu = new MenuCreator(null, null) {
-
+	public static MenuCreator metasShopMenu = new MenuCreator(new MenuFlag[]{MenuFlag.AllItemsTrigger}, null) {
+		@Override
+		public void onMenuClick(MenuClickEvent e) {
+			Bukkit.broadcastMessage("trigger");
+			MenuLink ml = (MenuLink)e.data;
+			Bukkit.broadcastMessage(e.slot + "<17");
+			if (e.slot == 31)openSubShop(e.player, ml.shop, 0);
+			else if(e.slot<17){
+				Bukkit.broadcastMessage("e.slot<17");
+				ml.item = ml.shop.getItem(e.item.getType(), (short) 0);
+				if (ml.item != null) ml.item.meta = e.item.getDurability();
+				if(ml.item==null){
+					e.player.sendMessage("§cUne erreur s'est produite ! Merci de contacter un membre du Staff");
+					ServerUtils.permMsg("errorlog", "Item invalide demandé dans le shop ! "+e.item.getType()+":"+e.item.getDurability());
+				}else{
+					Bukkit.broadcastMessage("ml.item != null");
+					ml.sp = BaseAPI.getOnlineSP(e.player.getUniqueId());
+					if(ml.item.getBuyPrice()<=1){
+						e.player.sendMessage("§cUne erreur s'est produite, contacte un membre du Staff ! (Invalid buy price)");
+						e.player.closeInventory();
+						ServerUtils.permMsg("errorlog", "§cShop : L'item "+ml.item.type+":"+ml.item.meta+" à un prix invalide !");
+					}
+					if(e.click== MenuClickEvent.ClickType.LEFT && ml.item.getBuyPrice() <= 1000000) openBuyShop(e.player, ml);
+					else if(e.click== MenuClickEvent.ClickType.RIGHT && ml.item.getSellPrice() != 0) openSellShop(e.player, ml);
+					else if (ml.item.getBuyPrice() >= 1000000 || ml.item.getSellPrice() == 0);
+					else{
+						e.player.sendMessage("§cUne erreur s'est produite, contacte un membre du Staff ! (No such action)");
+						e.player.closeInventory();
+						ServerUtils.permMsg("errorlog", "§cShop : Action de click non reconnue !");
+					}
+				}
+			}
+		}
 	};
 
-	public static void openMetasShop(Player p, SubShop sub, int pagen) {
-		Inventory inv = metasShopMenu.createInv(4, "§5Shop>> §2Types", new MenuLink(sub, pagen));
+	public static void openMetasShop(Player p, MenuLink ml) {
+		Inventory inv = metasShopMenu.createInv(4, "§5Shop>> §2Types", ml);
+
+		// footer | deux lignes
+		ItemStack item = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short)7);
+		for(int i=18;i<27;i++)inv.setItem(i, item);
+
+		// return button
+		item = new ItemStack(Material.BOOK_AND_QUILL, 1);
+		ItemMeta meta = item.getItemMeta();
+		meta.setDisplayName("§cRetour au menu précédent");
+		item.setItemMeta(meta);
+		inv.setItem(31, item);
+
+		ArrayList<ShopItem> items = new ArrayList<ShopItem>();
+		ShopItem si = new ShopItem();
+		si.type = ml.item.type;
+		si.modifier = ml.item.modifier;
+		si.buy = ml.item.buy;
+		si.sell = ml.item.sell;
+		si.shop = ml.item.shop;
+		for (int i = 0; i < ml.item.metas; i++) {
+			si.meta = (short) i;
+			items.add(si);
+		}
+
+		int iterator = 0;
+		ArrayList<String> lore;
+		for (ShopItem sitem: items) {
+			item = new ItemStack(sitem.type, 1, (short) iterator);
+			meta = item.getItemMeta();
+			lore = new ArrayList<>();
+			if (sitem.getBuyPrice() <= 1000000) lore.add("§2Prix : " + sitem.getBuyPrice() + " (Click gauche pour acheter)");
+			else lore.add("§2Achat Impossible");
+			if (sitem.getSellPrice() != 0) lore.add("§2Vente: " + sitem.getSellPrice() + " (Click droit pour vendre)");
+			else lore.add("§2Vente impossible");
+			meta.setLore(lore);
+			item.setItemMeta(meta);
+			inv.setItem(iterator, item);
+			iterator++;
+		}
+
+		p.openInventory(inv);
+		p.playSound(p.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 3.5f, 1.1f);
 	}
 
 	public static MenuCreator buyShopMenu = new MenuCreator(null, null) {
