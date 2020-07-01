@@ -206,7 +206,7 @@ public class MenusManager {
 			else if(e.slot<17){
 				Bukkit.broadcastMessage("e.slot<17");
 				ml.item = ml.shop.getItem(e.item.getType(), (short) 0);
-				if (ml.item != null) ml.item.meta = e.item.getDurability();
+				ml.meta = e.item.getDurability();
 				if(ml.item==null){
 					e.player.sendMessage("§cUne erreur s'est produite ! Merci de contacter un membre du Staff");
 					ServerUtils.permMsg("errorlog", "Item invalide demandé dans le shop ! "+e.item.getType()+":"+e.item.getDurability());
@@ -245,32 +245,18 @@ public class MenusManager {
 		item.setItemMeta(meta);
 		inv.setItem(31, item);
 
-		ArrayList<ShopItem> items = new ArrayList<ShopItem>();
-		ShopItem si = new ShopItem();
-		si.type = ml.item.type;
-		si.modifier = ml.item.modifier;
-		si.buy = ml.item.buy;
-		si.sell = ml.item.sell;
-		si.shop = ml.item.shop;
-		for (int i = 0; i < ml.item.metas; i++) {
-			si.meta = (short) i;
-			items.add(si);
-		}
-
-		int iterator = 0;
 		ArrayList<String> lore;
-		for (ShopItem sitem: items) {
-			item = new ItemStack(sitem.type, 1, (short) iterator);
+		for (int i = 0; i < ml.item.metas; i++) {
+			item = new ItemStack(ml.item.type, 1, (short) i);
 			meta = item.getItemMeta();
 			lore = new ArrayList<>();
-			if (sitem.getBuyPrice() <= 1000000) lore.add("§2Prix : " + sitem.getBuyPrice() + " (Click gauche pour acheter)");
+			if (ml.item.getBuyPrice() <= 1000000) lore.add("§2Prix : " + ml.item.getBuyPrice() + " (Click gauche pour acheter)");
 			else lore.add("§2Achat Impossible");
-			if (sitem.getSellPrice() != 0) lore.add("§2Vente: " + sitem.getSellPrice() + " (Click droit pour vendre)");
+			if (ml.item.getSellPrice() != 0) lore.add("§2Vente: " + ml.item.getSellPrice() + " (Click droit pour vendre)");
 			else lore.add("§2Vente impossible");
 			meta.setLore(lore);
 			item.setItemMeta(meta);
-			inv.setItem(iterator, item);
-			iterator++;
+			inv.setItem(i, item);
 		}
 
 		p.openInventory(inv);
@@ -291,7 +277,7 @@ public class MenusManager {
 					if (e.player.getInventory().firstEmpty() == -1) {
 						int possible = 0;
 						for (Map.Entry<Integer, ? extends ItemStack> slot : e.player.getInventory().all(ml.item.type).entrySet()) {
-							if (slot.getValue().getDurability() == ml.item.meta) { // ca passera pas les enchants etc...
+							if (slot.getValue().getDurability() == ((ml.meta != 0) ? ml.meta : ml.item.meta)) { // ca passera pas les enchants etc...
 								possible += (64 - slot.getValue().getAmount());
 								if (possible >= itemNum) break;
 							}
@@ -301,7 +287,7 @@ public class MenusManager {
 							return;
 						}
 					}
-					e.player.getInventory().addItem(new ItemStack(ml.item.type, itemNum, ml.item.meta));
+					e.player.getInventory().addItem(new ItemStack(ml.item.type, itemNum, (ml.meta != 0) ? ml.meta : ml.item.meta));
 					ml.sp.withdrawMoney(ml.item.getBuyPrice() * itemNum);
 				}else{
 					e.player.sendMessage("§cVous n'avez pas assez d'argent !");
@@ -320,7 +306,7 @@ public class MenusManager {
 		item.setItemMeta(meta);
 		inv.setItem(0, item);
 
-		item = new ItemStack(ml.item.type, 1);
+		item = new ItemStack(ml.item.type, 1, (ml.meta != 0) ? ml.meta : ml.item.meta);
 		meta = item.getItemMeta();
 		ArrayList<String> lore = new ArrayList<>();
 		lore.add("§3Unité: " + ml.item.getBuyPrice() + "$");
@@ -369,7 +355,7 @@ public class MenusManager {
 				else return;
 				HashMap<Integer, ItemStack> real = new HashMap<>();
 				for(Map.Entry<Integer, ? extends ItemStack> item : e.player.getInventory().all(ml.item.type).entrySet()){
-					if(item.getValue().getDurability()==ml.item.meta){
+					if(item.getValue().getDurability()==((ml.meta != 0) ? ml.meta : ml.item.meta)){
 						cu+=item.getValue().getAmount();
 						real.put(item.getKey(), item.getValue());
 						if(cu>=itemNum)break;
@@ -400,7 +386,7 @@ public class MenusManager {
 		item.setItemMeta(meta);
 		inv.setItem(0, item);
 
-		item = new ItemStack(ml.item.type, 1);
+		item = new ItemStack(ml.item.type, 1, (ml.meta != 0) ? ml.meta : ml.item.meta);
 		meta = item.getItemMeta();
 		ArrayList<String> lore = new ArrayList<>();
 		lore.add("§3Unité: " + ml.item.getSellPrice() + "$");

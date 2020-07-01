@@ -8,6 +8,7 @@ public class MenuLink {
 	public SubShop shop;
 	public int page;
 	public ShopItem item;
+	public short meta;
 
 	public MenuLink(ShopItem item, int page){
 		this.item = item;
