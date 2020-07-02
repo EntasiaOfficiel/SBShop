@@ -21,8 +21,7 @@ public class Main extends JavaPlugin {
 		try{
 			main = this;
 			saveDefaultConfig();
-			getLogger().info("Starting version 1.0 (Beta)");
-			global_modifier = main.getConfig().getInt("global_modifier");
+			getLogger().info("Démarrage du plugin...");
 			getCommand("shop").setExecutor(new ShopCmd());
 			getCommand("shopreload").setExecutor(new ShopReloadCmd());
 			loadConfig();
@@ -33,8 +32,9 @@ public class Main extends JavaPlugin {
 		}
 	}
 
-	public static void loadConfig() {
+	public static void loadConfig() throws Throwable {
 		main.reloadConfig();
+		global_modifier = main.getConfig().getInt("global_modifier");
 		category(SubShop.BLOCKS, "shops.blocks");
 		category(SubShop.ORES, "shops.ores");
 		category(SubShop.FOOD, "shops.food");
@@ -43,7 +43,7 @@ public class Main extends JavaPlugin {
 
 	}
 
-	public static void category(SubShop cat, String a){
+	private static void category(SubShop cat, String a) throws Throwable {
 		cat.items = new ArrayList<>();
 		ConfigurationSection cs = main.getConfig().getConfigurationSection(a);
 		if(cs==null){
@@ -61,24 +61,22 @@ public class Main extends JavaPlugin {
 				sitem.shop = cat;
 
 				sitem.type = Material.getMaterial(cs2.getString("type").toUpperCase());
-				sitem.meta = (short) cs2.getInt("meta");
+				sitem.maxMeta = (short) cs2.getInt("maxMeta");
+				if(sitem.maxMeta==0) sitem.meta = (short) cs2.getInt("meta");
 				sitem.buy = cs2.getInt("buy");
 				sitem.sell = cs2.getInt("sell");
 				sitem.modifier = cs2.getInt("price-modifier", 1);
-				sitem.metas = (short) cs2.getInt("metas");
 
-				if(sitem.type==null)main.getLogger().warning("Erreur sur l'item "+cs.getString("type")+":"+sitem.meta+" : type invalide");
-				else if(sitem.sell>sitem.buy)main.getLogger().warning("Erreur sur l'item "+sitem.type+":"+sitem.meta+" : PRIX DE VENTE PLUS HAUT QUE L'ACHAT");
-				else{
-					cat.items.add(sitem);
-				}
+				if(sitem.type==null)warn(cat, cs2.getString("type"), sitem.meta, "Type invalide");
+				else if(sitem.sell<0)warn(cat, cs2.getString("type"), sitem.meta, "Prie de vente négatif");
+				else if(sitem.buy<0)warn(cat, cs2.getString("type"), sitem.meta, "Prie d'achat négatif");
+				else if(sitem.sell>sitem.buy)warn(cat, cs2.getString("type"), sitem.meta, "Prix de vente plus haut que celui d'achat");
+				else cat.items.add(sitem);
 			}
 		}
 	}
 
-	@Override
-	public void onDisable() {
-		getLogger().info("Stopping plugin");
+	private static void warn(SubShop cat, String type, short meta, String msg){
+		main.getLogger().warning("Erreur sur l'item "+type+":"+meta+" (catégorie "+cat.name()+") : "+msg);
 	}
-
 }

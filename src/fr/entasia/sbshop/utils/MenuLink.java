@@ -5,15 +5,11 @@ import fr.entasia.skycore.apis.SkyPlayer;
 public class MenuLink {
 
 	public SkyPlayer sp;
-	public SubShop shop;
-	public int page;
-	public ShopItem item;
+	public ShopItem sitem;
 	public short meta;
 
-	public MenuLink(ShopItem item, int page){
-		this.item = item;
-		this.page = page;
-	}
+	public SubShop shop;
+	public int page;
 
 	public MenuLink(SubShop shop, int page){
 		this.shop = shop;

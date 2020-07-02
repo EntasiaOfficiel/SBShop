@@ -1,7 +1,6 @@
 package fr.entasia.sbshop.commands;
 
 import fr.entasia.sbshop.Main;
-import fr.entasia.sbshop.MenusManager;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -14,8 +13,13 @@ public class ShopReloadCmd implements CommandExecutor {
 		if (!(sender instanceof Player)) return false;
 
 		if(sender.hasPermission("skyblock.shop.reload")){
-			Main.loadConfig();
-			sender.sendMessage("§aConfiguration rechargée ! (Voir les logs pour erreurs potencielles)");
+			try{
+				Main.loadConfig();
+				sender.sendMessage("§aConfiguration rechargée avec succès !");
+			}catch(Throwable e){
+				e.printStackTrace();
+				sender.sendMessage("§cUne erreur s'est produite !");
+			}
 		}else sender.sendMessage("§cTu n'as pas accès à cette commande !");
 
 		return true;

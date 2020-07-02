@@ -1,10 +1,10 @@
 package fr.entasia.sbshop;
 
-import fr.entasia.apis.utils.ItemUtils;
-import fr.entasia.apis.utils.ServerUtils;
 import fr.entasia.apis.menus.MenuClickEvent;
 import fr.entasia.apis.menus.MenuCreator;
 import fr.entasia.apis.menus.MenuFlag;
+import fr.entasia.apis.utils.ItemUtils;
+import fr.entasia.apis.utils.ServerUtils;
 import fr.entasia.sbshop.utils.MenuLink;
 import fr.entasia.sbshop.utils.ShopItem;
 import fr.entasia.sbshop.utils.SubShop;
@@ -25,7 +25,7 @@ import java.util.Map;
 import static org.bukkit.Material.APPLE;
 import static org.bukkit.Material.STAINED_GLASS_PANE;
 
-public class MenusManager {
+public class InvsManager {
 
 	public static MenuCreator mainShopMenu = new MenuCreator(null, null) {
 		@Override
@@ -96,28 +96,20 @@ public class MenusManager {
 			else if (e.slot == 48 && e.item != null)openSubShop(e.player, ml.shop, ml.page - 1);
 			else if (e.slot == 50 && e.item != null)openSubShop(e.player, ml.shop, ml.page + 1);
 			else if(e.slot<36){
-				ml.item = ml.shop.getItem(e.item.getType(), e.item.getDurability());
-				if(ml.item==null){
+				ml.sitem = ml.shop.getItem(e.item.getType(), e.item.getDurability());
+				if(ml.sitem ==null){
 					e.player.sendMessage("§cUne erreur s'est produite ! Merci de contacter un membre du Staff");
-					ServerUtils.permMsg("errorlog", "Item invalide demandé dans le shop ! "+e.item.getType()+":"+e.item.getDurability());
+					ServerUtils.permMsg("log.shoperror", "§cShop : Item invalide demandé dans le shop ! "+e.item.getType()+":"+e.item.getDurability());
 				}else{
 					ml.sp = BaseAPI.getOnlineSP(e.player.getUniqueId());
-					if(ml.item.getBuyPrice()<=1){
-						e.player.sendMessage("§cUne erreur s'est produite, contacte un membre du Staff ! (Invalid buy price)");
-						e.player.closeInventory();
-						ServerUtils.permMsg("errorlog", "§cShop : L'item "+ml.item.type+":"+ml.item.meta+" à un prix invalide !");
-					}
-					if (ml.item.metas > 0) {
-						openMetasShop(e.player, ml);
-					}
+					if (ml.sitem.maxMeta > 0) openMetasShop(e.player, ml);
 					else {
-						if(e.click== MenuClickEvent.ClickType.LEFT && ml.item.getBuyPrice() <= 1000000) openBuyShop(e.player, ml);
-						else if(e.click== MenuClickEvent.ClickType.RIGHT && ml.item.getSellPrice() != 0) openSellShop(e.player, ml);
-						else if (ml.item.getBuyPrice() >= 1000000 || ml.item.getSellPrice() == 0);
+						if(e.click== MenuClickEvent.ClickType.LEFT && ml.sitem.getBuyPrice() != 0) openBuyShop(e.player, ml);
+						else if(e.click== MenuClickEvent.ClickType.RIGHT && ml.sitem.getSellPrice() != 0) openSellShop(e.player, ml);
 						else{
+							ServerUtils.permMsg("log.shoperror", "§cShop : Action de click non reconnue !");
 							e.player.sendMessage("§cUne erreur s'est produite, contacte un membre du Staff ! (No such action)");
 							e.player.closeInventory();
-							ServerUtils.permMsg("errorlog", "§cShop : Action de click non reconnue !");
 						}
 					}
 				}
@@ -146,13 +138,14 @@ public class MenusManager {
 		int it=0;
 		for(ShopItem sitem : sub.items.subList(min, max)){
 
-			item = new ItemStack(sitem.type, 1, sitem.meta);
+			item = new ItemStack(sitem.type, 1);
 			meta = item.getItemMeta();
 			lore = new ArrayList<>();
-			if (sitem.metas > 0) {
+			if (sitem.maxMeta > 0){
+				item.setDurability((short) 0);
 				lore.add("§2Clique pour voir plus de choix");
 			}
-			else {
+			else{
 				if (sitem.getBuyPrice() <= 1000000) lore.add("§2Prix : " + sitem.getBuyPrice() + " (Click gauche pour acheter)");
 				else lore.add("§2Achat Impossible");
 				if (sitem.getSellPrice() != 0) lore.add("§2Vente: " + sitem.getSellPrice() + " (Click droit pour vendre)");
@@ -199,28 +192,23 @@ public class MenusManager {
 	public static MenuCreator metasShopMenu = new MenuCreator(new MenuFlag[]{MenuFlag.AllItemsTrigger}, null) {
 		@Override
 		public void onMenuClick(MenuClickEvent e) {
-			Bukkit.broadcastMessage("trigger");
 			MenuLink ml = (MenuLink)e.data;
-			Bukkit.broadcastMessage(e.slot + "<17");
 			if (e.slot == 31)openSubShop(e.player, ml.shop, 0);
 			else if(e.slot<17){
-				Bukkit.broadcastMessage("e.slot<17");
-				ml.item = ml.shop.getItem(e.item.getType(), (short) 0);
+				ml.sitem = ml.shop.getItem(e.item.getType(), (short) 0);
 				ml.meta = e.item.getDurability();
-				if(ml.item==null){
+				if(ml.sitem ==null){
 					e.player.sendMessage("§cUne erreur s'est produite ! Merci de contacter un membre du Staff");
 					ServerUtils.permMsg("errorlog", "Item invalide demandé dans le shop ! "+e.item.getType()+":"+e.item.getDurability());
 				}else{
-					Bukkit.broadcastMessage("ml.item != null");
 					ml.sp = BaseAPI.getOnlineSP(e.player.getUniqueId());
-					if(ml.item.getBuyPrice()<=1){
+					if(ml.sitem.getBuyPrice()<=1){
 						e.player.sendMessage("§cUne erreur s'est produite, contacte un membre du Staff ! (Invalid buy price)");
 						e.player.closeInventory();
-						ServerUtils.permMsg("errorlog", "§cShop : L'item "+ml.item.type+":"+ml.item.meta+" à un prix invalide !");
+						ServerUtils.permMsg("errorlog", "§cShop : L'item "+ml.sitem.type+":"+ml.sitem.meta+" à un prix invalide !");
 					}
-					if(e.click== MenuClickEvent.ClickType.LEFT && ml.item.getBuyPrice() <= 1000000) openBuyShop(e.player, ml);
-					else if(e.click== MenuClickEvent.ClickType.RIGHT && ml.item.getSellPrice() != 0) openSellShop(e.player, ml);
-					else if (ml.item.getBuyPrice() >= 1000000 || ml.item.getSellPrice() == 0);
+					if(e.click== MenuClickEvent.ClickType.LEFT && ml.sitem.getBuyPrice() != 0) openBuyShop(e.player, ml);
+					else if(e.click== MenuClickEvent.ClickType.RIGHT && ml.sitem.getSellPrice() != 0) openSellShop(e.player, ml);
 					else{
 						e.player.sendMessage("§cUne erreur s'est produite, contacte un membre du Staff ! (No such action)");
 						e.player.closeInventory();
@@ -233,31 +221,34 @@ public class MenusManager {
 
 	public static void openMetasShop(Player p, MenuLink ml) {
 		Inventory inv = metasShopMenu.createInv(4, "§5Shop>> §2Types", ml);
-
-		// footer | deux lignes
-		ItemStack item = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short)7);
-		for(int i=18;i<27;i++)inv.setItem(i, item);
-
-		// return button
-		item = new ItemStack(Material.BOOK_AND_QUILL, 1);
-		ItemMeta meta = item.getItemMeta();
-		meta.setDisplayName("§cRetour au menu précédent");
-		item.setItemMeta(meta);
-		inv.setItem(31, item);
+		if(ml.sitem.maxMeta == 0)return;
 
 		ArrayList<String> lore;
-		for (int i = 0; i < ml.item.metas; i++) {
-			item = new ItemStack(ml.item.type, 1, (short) i);
+		ItemStack item;
+		ItemMeta meta;
+		for (int i = 0; i < ml.sitem.maxMeta; i++) {
+			item = new ItemStack(ml.sitem.type, 1, (short) i);
 			meta = item.getItemMeta();
 			lore = new ArrayList<>();
-			if (ml.item.getBuyPrice() <= 1000000) lore.add("§2Prix : " + ml.item.getBuyPrice() + " (Click gauche pour acheter)");
-			else lore.add("§2Achat Impossible");
-			if (ml.item.getSellPrice() != 0) lore.add("§2Vente: " + ml.item.getSellPrice() + " (Click droit pour vendre)");
-			else lore.add("§2Vente impossible");
+			if (ml.sitem.getBuyPrice() == 0) lore.add("§2Achat Impossible");
+			else lore.add("§2Prix : " + ml.sitem.getBuyPrice() + " (Click gauche pour acheter)");
+			if (ml.sitem.getSellPrice() == 0) lore.add("§2Vente impossible");
+			else lore.add("§2Vente: " + ml.sitem.getSellPrice() + " (Click droit pour vendre)");
 			meta.setLore(lore);
 			item.setItemMeta(meta);
 			inv.setItem(i, item);
 		}
+
+		// footer | deux lignes
+		item = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short)7);
+		for(int i=18;i<27;i++)inv.setItem(i, item);
+
+		// return button
+		item = new ItemStack(Material.BOOK_AND_QUILL, 1);
+		meta = item.getItemMeta();
+		meta.setDisplayName("§cRetour au menu précédent");
+		item.setItemMeta(meta);
+		inv.setItem(31, item);
 
 		p.openInventory(inv);
 		p.playSound(p.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 3.5f, 1.1f);
@@ -273,25 +264,26 @@ public class MenusManager {
 				if (e.slot == 11) itemNum = 1;
 				else if (e.slot == 15) itemNum = 64;
 				else return;
-				if (ml.sp.getMoney() >= ml.item.getBuyPrice()) {
+				int pay = ml.sitem.getBuyPrice() * itemNum;
+				if (ml.sp.getMoney() < pay) {
+					e.player.sendMessage("§cTu n'as pas assez d'argent !");
+					e.player.closeInventory();
+				}else{
 					if (e.player.getInventory().firstEmpty() == -1) {
 						int possible = 0;
-						for (Map.Entry<Integer, ? extends ItemStack> slot : e.player.getInventory().all(ml.item.type).entrySet()) {
-							if (slot.getValue().getDurability() == ((ml.meta != 0) ? ml.meta : ml.item.meta)) { // ca passera pas les enchants etc...
+						for (Map.Entry<Integer, ? extends ItemStack> slot : e.player.getInventory().all(ml.sitem.type).entrySet()) {
+							if (slot.getValue().getDurability() == ((ml.meta != 0) ? ml.meta : ml.sitem.meta)) { // ca passera pas les enchants etc...
 								possible += (64 - slot.getValue().getAmount());
 								if (possible >= itemNum) break;
 							}
 						}
 						if (possible < itemNum) {
-							e.player.sendMessage("§cPas assez de slots libres");
+							e.player.sendMessage("§cTu n'as pas assez de slots libres");
 							return;
 						}
 					}
-					e.player.getInventory().addItem(new ItemStack(ml.item.type, itemNum, (ml.meta != 0) ? ml.meta : ml.item.meta));
-					ml.sp.withdrawMoney(ml.item.getBuyPrice() * itemNum);
-				}else{
-					e.player.sendMessage("§cVous n'avez pas assez d'argent !");
-					e.player.closeInventory();
+					ml.sp.withdrawMoney(pay);
+					e.player.getInventory().addItem(new ItemStack(ml.sitem.type, itemNum, (ml.meta != 0) ? ml.meta : ml.sitem.meta));
 				}
 			}
 		}
@@ -306,11 +298,11 @@ public class MenusManager {
 		item.setItemMeta(meta);
 		inv.setItem(0, item);
 
-		item = new ItemStack(ml.item.type, 1, (ml.meta != 0) ? ml.meta : ml.item.meta);
+		item = new ItemStack(ml.sitem.type, 1, (ml.meta != 0) ? ml.meta : ml.sitem.meta);
 		meta = item.getItemMeta();
 		ArrayList<String> lore = new ArrayList<>();
-		lore.add("§3Unité: " + ml.item.getBuyPrice() + "$");
-		lore.add("§3Stack: " + (ml.item.getBuyPrice() * 64)+ "$");
+		lore.add("§3Unité: " + ml.sitem.getBuyPrice() + "$");
+		lore.add("§3Stack: " + (ml.sitem.getBuyPrice() * 64)+ "$");
 		meta.setLore(lore);
 		item.setItemMeta(meta);
 		inv.setItem(13, item);
@@ -319,7 +311,7 @@ public class MenusManager {
 		meta = item.getItemMeta();
 		meta.setDisplayName("§2Acheter à l'unité");
 		lore = new ArrayList<>();
-		lore.add("§3Prix: " +  ml.item.getBuyPrice() + "$");
+		lore.add("§3Prix: " +  ml.sitem.getBuyPrice() + "$");
 		meta.setLore(lore);
 		item.setItemMeta(meta);
 		inv.setItem(11, item);
@@ -328,7 +320,7 @@ public class MenusManager {
 		meta = item.getItemMeta();
 		meta.setDisplayName("§2Acheter par stack");
 		lore = new ArrayList<>();
-		lore.add("§3Prix: " + (ml.item.getBuyPrice() * 64) + "$");
+		lore.add("§3Prix: " + (ml.sitem.getBuyPrice() * 64) + "$");
 		meta.setLore(lore);
 		item.setItemMeta(meta);
 		inv.setItem(15, item);
@@ -354,8 +346,8 @@ public class MenusManager {
 				else if (e.slot == 15) itemNum = 64;
 				else return;
 				HashMap<Integer, ItemStack> real = new HashMap<>();
-				for(Map.Entry<Integer, ? extends ItemStack> item : e.player.getInventory().all(ml.item.type).entrySet()){
-					if(item.getValue().getDurability()==((ml.meta != 0) ? ml.meta : ml.item.meta)){
+				for(Map.Entry<Integer, ? extends ItemStack> item : e.player.getInventory().all(ml.sitem.type).entrySet()){
+					if(item.getValue().getDurability()==((ml.meta != 0) ? ml.meta : ml.sitem.meta)){
 						cu+=item.getValue().getAmount();
 						real.put(item.getKey(), item.getValue());
 						if(cu>=itemNum)break;
@@ -371,7 +363,7 @@ public class MenusManager {
 							break;
 						}
 					}
-					ml.sp.addMoney(ml.item.getSellPrice() * itemNum);
+					ml.sp.addMoney(ml.sitem.getSellPrice() * itemNum);
 				}else e.player.sendMessage("§cTu n'as pas assez d'items dans ton inventaire !");
 			}
 		}
@@ -386,11 +378,11 @@ public class MenusManager {
 		item.setItemMeta(meta);
 		inv.setItem(0, item);
 
-		item = new ItemStack(ml.item.type, 1, (ml.meta != 0) ? ml.meta : ml.item.meta);
+		item = new ItemStack(ml.sitem.type, 1, (ml.meta != 0) ? ml.meta : ml.sitem.meta);
 		meta = item.getItemMeta();
 		ArrayList<String> lore = new ArrayList<>();
-		lore.add("§3Unité: " + ml.item.getSellPrice() + "$");
-		lore.add("§3Stack: " + (ml.item.getSellPrice() * 64) + "$");
+		lore.add("§3Unité: " + ml.sitem.getSellPrice() + "$");
+		lore.add("§3Stack: " + (ml.sitem.getSellPrice() * 64) + "$");
 		meta.setLore(lore);
 		item.setItemMeta(meta);
 		inv.setItem(13, item);
@@ -399,7 +391,7 @@ public class MenusManager {
 		meta = item.getItemMeta();
 		meta.setDisplayName("§2Vendre à l'unité");
 		lore = new ArrayList<>();
-		lore.add("§3Prix: " + ml.item.getSellPrice() + "$");
+		lore.add("§3Prix: " + ml.sitem.getSellPrice() + "$");
 		meta.setLore(lore);
 		item.setItemMeta(meta);
 		inv.setItem(11, item);
@@ -408,7 +400,7 @@ public class MenusManager {
 		meta = item.getItemMeta();
 		meta.setDisplayName("§2Vendre par stack");
 		lore = new ArrayList<>();
-		lore.add("§3Prix: " + (ml.item.getSellPrice() * 64) + "$");
+		lore.add("§3Prix: " + (ml.sitem.getSellPrice() * 64) + "$");
 		meta.setLore(lore);
 		item.setItemMeta(meta);
 		inv.setItem(15, item);

@@ -9,8 +9,8 @@ public class ShopItem {
 
 	public Material type;
 	public short meta;
+	public short maxMeta;
 
-	public short metas;
 
 	public int buy;
 	public int sell;
