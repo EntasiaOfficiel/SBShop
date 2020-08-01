@@ -137,19 +137,17 @@ public class InvsManager {
 
 		int it=0;
 		for(ShopItem sitem : sub.items.subList(min, max)){
-
-			item = new ItemStack(sitem.type, 1);
+			item = new ItemStack(sitem.type, 1, sitem.meta);
 			meta = item.getItemMeta();
 			lore = new ArrayList<>();
 			if (sitem.maxMeta > 0){
 				item.setDurability((short) 0);
-				lore.add("§2Clique pour voir plus de choix");
-			}
-			else{
-				if (sitem.getBuyPrice() <= 1000000) lore.add("§2Prix : " + sitem.getBuyPrice() + " (Click gauche pour acheter)");
-				else lore.add("§2Achat Impossible");
-				if (sitem.getSellPrice() != 0) lore.add("§2Vente: " + sitem.getSellPrice() + " (Click droit pour vendre)");
-				else lore.add("§2Vente impossible");
+				lore.add("§6Clique pour voir plus de choix");
+			}else{
+				if (sitem.getBuyPrice() == -1) lore.add("§cAchat Impossible");
+				else lore.add("§2Prix : §a" + sitem.getBuyPrice() + "§2 (Click gauche pour acheter)");
+				if (sitem.getSellPrice() == -1) lore.add("§cVente impossible");
+				else lore.add("§2Vente: §a" + sitem.getSellPrice() + "§2 (Click droit pour vendre)");
 			}
 			meta.setLore(lore);
 			item.setItemMeta(meta);
