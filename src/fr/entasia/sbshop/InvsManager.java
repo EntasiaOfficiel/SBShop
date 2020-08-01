@@ -104,9 +104,11 @@ public class InvsManager {
 					ml.sp = BaseAPI.getOnlineSP(e.player.getUniqueId());
 					if (ml.sitem.maxMeta > 0) openMetasShop(e.player, ml);
 					else {
-						if(e.click== MenuClickEvent.ClickType.LEFT && ml.sitem.getBuyPrice() != 0) openBuyShop(e.player, ml);
-						else if(e.click== MenuClickEvent.ClickType.RIGHT && ml.sitem.getSellPrice() != 0) openSellShop(e.player, ml);
-						else{
+						if(e.click==MenuClickEvent.ClickType.LEFT) {
+							if (ml.sitem.getBuyPrice() != 0) openBuyShop(e.player, ml);
+						}else if(e.click==MenuClickEvent.ClickType.RIGHT){
+							if (ml.sitem.getSellPrice() != 0) openSellShop(e.player, ml);
+						}else{
 							ServerUtils.permMsg("log.shoperror", "§cShop : Action de click non reconnue !");
 							e.player.sendMessage("§cUne erreur s'est produite, contacte un membre du Staff ! (No such action)");
 							e.player.closeInventory();
@@ -205,12 +207,14 @@ public class InvsManager {
 						e.player.closeInventory();
 						ServerUtils.permMsg("errorlog", "§cShop : L'item "+ml.sitem.type+":"+ml.sitem.meta+" à un prix invalide !");
 					}
-					if(e.click== MenuClickEvent.ClickType.LEFT && ml.sitem.getBuyPrice() != 0) openBuyShop(e.player, ml);
-					else if(e.click== MenuClickEvent.ClickType.RIGHT && ml.sitem.getSellPrice() != 0) openSellShop(e.player, ml);
-					else{
+					if(e.click==MenuClickEvent.ClickType.LEFT) {
+						if (ml.sitem.getBuyPrice() != 0) openBuyShop(e.player, ml);
+					}else if(e.click==MenuClickEvent.ClickType.RIGHT){
+						if (ml.sitem.getSellPrice() != 0) openSellShop(e.player, ml);
+					}else{
+						ServerUtils.permMsg("log.shoperror", "§cShop : Action de click non reconnue !");
 						e.player.sendMessage("§cUne erreur s'est produite, contacte un membre du Staff ! (No such action)");
 						e.player.closeInventory();
-						ServerUtils.permMsg("errorlog", "§cShop : Action de click non reconnue !");
 					}
 				}
 			}
@@ -229,9 +233,9 @@ public class InvsManager {
 			meta = item.getItemMeta();
 			lore = new ArrayList<>();
 			if (ml.sitem.getBuyPrice() == 0) lore.add("§2Achat Impossible");
-			else lore.add("§2Prix : " + ml.sitem.getBuyPrice() + " (Click gauche pour acheter)");
+			else lore.add("§2Prix : §a" + ml.sitem.getBuyPrice() + "§2$ (Click gauche pour acheter)");
 			if (ml.sitem.getSellPrice() == 0) lore.add("§2Vente impossible");
-			else lore.add("§2Vente: " + ml.sitem.getSellPrice() + " (Click droit pour vendre)");
+			else lore.add("§2Vente: §a" + ml.sitem.getSellPrice() + "§2$ (Click droit pour vendre)");
 			meta.setLore(lore);
 			item.setItemMeta(meta);
 			inv.setItem(i, item);
