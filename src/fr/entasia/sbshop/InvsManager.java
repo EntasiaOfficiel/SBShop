@@ -263,7 +263,7 @@ public class InvsManager {
 			else{
 				int itemNum;
 				if (e.slot == 11) itemNum = ml.sitem.by;
-				else if (e.slot == 15) itemNum = ml.sitem.by_max;
+				else if (e.slot == 15) itemNum = ml.sitem.by_mult;
 				else return;
 				int pay = ml.sitem.buyPrice * itemNum;
 				if (ml.sp.getMoney() < pay) {
@@ -307,7 +307,7 @@ public class InvsManager {
 			lore.add("§3Stack: " + (ml.sitem.buyPrice * 64)+ "$");
 		}else{
 			lore.add("§3"+ml.sitem.by+": " + ml.sitem.buyPrice + "$");
-			lore.add("§3"+ml.sitem.by*ml.sitem.by_max+": " + (ml.sitem.buyPrice * ml.sitem.by_max)+ "$");
+			lore.add("§3"+ml.sitem.by*ml.sitem.by_mult +": " + (ml.sitem.buyPrice * ml.sitem.by_mult)+ "$");
 		}
 		meta.setLore(lore);
 		item.setItemMeta(meta);
@@ -331,10 +331,10 @@ public class InvsManager {
 		if(ml.sitem.by==1){
 			meta.setDisplayName("§2Acheter par stack");
 		}else{
-			meta.setDisplayName("§2Acheter "+ml.sitem.by*ml.sitem.by_max);
+			meta.setDisplayName("§2Acheter "+ml.sitem.by*ml.sitem.by_mult);
 		}
 		lore = new ArrayList<>();
-		lore.add("§3Prix: " + (ml.sitem.buyPrice * 64) + "$");
+		lore.add("§3Prix: " + (ml.sitem.buyPrice * ml.sitem.by_mult) + "$");
 		meta.setLore(lore);
 		item.setItemMeta(meta);
 		inv.setItem(15, item);
@@ -358,7 +358,7 @@ public class InvsManager {
 			if (e.slot == 0) openSubShop(e.player, ml.shop, ml.page);
 			else{
 				if (e.slot == 11) itemNum = ml.sitem.by;
-				else if (e.slot == 15) itemNum = ml.sitem.by*ml.sitem.by_max;
+				else if (e.slot == 15) itemNum = ml.sitem.by*ml.sitem.by_mult;
 				else return;
 				HashMap<Integer, ItemStack> real = new HashMap<>();
 				for(Map.Entry<Integer, ? extends ItemStack> item : e.player.getInventory().all(ml.sitem.type).entrySet()){
@@ -401,7 +401,7 @@ public class InvsManager {
 			lore.add("§3Stack: §b" + (ml.sitem.sellPrice * 64)+ "§3$");
 		}else{
 			lore.add("§3"+ml.sitem.by+": §b" + ml.sitem.sellPrice + "§3$");
-			lore.add("§3"+ml.sitem.by*ml.sitem.by_max+": §b" + (ml.sitem.sellPrice * ml.sitem.by_max)+ "§3$");
+			lore.add("§3"+ml.sitem.by*ml.sitem.by_mult +": §b" + (ml.sitem.sellPrice * ml.sitem.by_mult)+ "§3$");
 		}
 		meta.setLore(lore);
 		item.setItemMeta(meta);
@@ -425,10 +425,10 @@ public class InvsManager {
 		if(ml.sitem.by==1){
 			meta.setDisplayName("§2Vendre par stack");
 		}else{
-			meta.setDisplayName("§2Vendre "+ml.sitem.by*ml.sitem.by_max);
+			meta.setDisplayName("§2Vendre "+ml.sitem.by*ml.sitem.by_mult);
 		}
 		lore = new ArrayList<>();
-		lore.add("§3Prix: " + (ml.sitem.sellPrice * 64) + "$");
+		lore.add("§3Prix: " + (ml.sitem.sellPrice * ml.sitem.by_mult) + "$");
 		meta.setLore(lore);
 		item.setItemMeta(meta);
 		inv.setItem(15, item);

@@ -74,7 +74,7 @@ public class Main extends JavaPlugin {
 				// x <= 10
 				// nombre max = 10
 
-				sitem.by_max = 64/sitem.by;
+				sitem.by_mult = 64/sitem.by;
 
 				if(sitem.type==null)warn(cat, cs2.getString("type"), sitem.meta, "Type invalide");
 				else if(sitem.sellPrice <0)warn(cat, cs2.getString("type"), sitem.meta, "Prie de vente négatif");

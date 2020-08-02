@@ -12,7 +12,7 @@ public class ShopItem {
 	public short maxMeta;
 
 	public int by;
-	public int by_max = 1; // Multiplicateur seulement
+	public int by_mult = 1; // Multiplicateur seulement
 
 
 	public int buyPrice;
