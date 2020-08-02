@@ -68,11 +68,13 @@ public class Main extends JavaPlugin {
 				sitem.buyPrice = cs2.getInt("buy") * sitem.modifier * sitem.shop.price_modifier * Main.global_modifier;
 				sitem.sellPrice = cs2.getInt("sell") * sitem.modifier * sitem.shop.price_modifier * Main.global_modifier;
 
-				// sitem.by = 6;
-				// 6 * x <= 64
-				// x <= 64/6
-				// x <= 10
-				// nombre max = 10
+				/*
+				sitem.by = 6;
+				6 * x <= 64
+				x <= 64/6
+				x <= 10
+				nombre max = 10
+				*/
 
 				sitem.by_mult = 64/sitem.by;
 

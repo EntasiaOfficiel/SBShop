@@ -145,9 +145,9 @@ public class InvsManager {
 				item.setDurability((short) 0);
 				lore.add("§6Clique pour voir plus de choix");
 			}else{
-				if (sitem.buyPrice == -1) lore.add("§cAchat Impossible");
+				if (sitem.buyPrice == 0) lore.add("§cAchat Impossible");
 				else lore.add("§2Prix: §a" + sitem.buyPrice + "§2 (Click gauche pour acheter)");
-				if (sitem.sellPrice == -1) lore.add("§cVente impossible");
+				if (sitem.sellPrice == 0) lore.add("§cVente impossible");
 				else lore.add("§2Vente: §a" + sitem.sellPrice + "§2 (Click droit pour vendre)");
 			}
 			meta.setLore(lore);
