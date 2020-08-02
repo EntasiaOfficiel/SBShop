@@ -9,7 +9,6 @@ import fr.entasia.sbshop.utils.MenuLink;
 import fr.entasia.sbshop.utils.ShopItem;
 import fr.entasia.sbshop.utils.SubShop;
 import fr.entasia.skycore.apis.BaseAPI;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -105,9 +104,9 @@ public class InvsManager {
 					if (ml.sitem.maxMeta > 0) openMetasShop(e.player, ml);
 					else {
 						if(e.click==MenuClickEvent.ClickType.LEFT) {
-							if (ml.sitem.getBuyPrice() != 0) openBuyShop(e.player, ml);
+							if (ml.sitem.buyPrice != 0) openBuyShop(e.player, ml);
 						}else if(e.click==MenuClickEvent.ClickType.RIGHT){
-							if (ml.sitem.getSellPrice() != 0) openSellShop(e.player, ml);
+							if (ml.sitem.sellPrice != 0) openSellShop(e.player, ml);
 						}else{
 							ServerUtils.permMsg("log.shoperror", "§cShop : Action de click non reconnue !");
 							e.player.sendMessage("§cUne erreur s'est produite, contacte un membre du Staff ! (No such action)");
@@ -139,17 +138,17 @@ public class InvsManager {
 
 		int it=0;
 		for(ShopItem sitem : sub.items.subList(min, max)){
-			item = new ItemStack(sitem.type, 1, sitem.meta);
+			item = new ItemStack(sitem.type, sitem.by, sitem.meta);
 			meta = item.getItemMeta();
 			lore = new ArrayList<>();
 			if (sitem.maxMeta > 0){
 				item.setDurability((short) 0);
 				lore.add("§6Clique pour voir plus de choix");
 			}else{
-				if (sitem.getBuyPrice() == -1) lore.add("§cAchat Impossible");
-				else lore.add("§2Prix : §a" + sitem.getBuyPrice() + "§2 (Click gauche pour acheter)");
-				if (sitem.getSellPrice() == -1) lore.add("§cVente impossible");
-				else lore.add("§2Vente: §a" + sitem.getSellPrice() + "§2 (Click droit pour vendre)");
+				if (sitem.buyPrice == -1) lore.add("§cAchat Impossible");
+				else lore.add("§2Prix: §a" + sitem.buyPrice + "§2 (Click gauche pour acheter)");
+				if (sitem.sellPrice == -1) lore.add("§cVente impossible");
+				else lore.add("§2Vente: §a" + sitem.sellPrice + "§2 (Click droit pour vendre)");
 			}
 			meta.setLore(lore);
 			item.setItemMeta(meta);
@@ -202,15 +201,15 @@ public class InvsManager {
 					ServerUtils.permMsg("errorlog", "Item invalide demandé dans le shop ! "+e.item.getType()+":"+e.item.getDurability());
 				}else{
 					ml.sp = BaseAPI.getOnlineSP(e.player.getUniqueId());
-					if(ml.sitem.getBuyPrice()<=1){
+					if(ml.sitem.buyPrice<=1){
 						e.player.sendMessage("§cUne erreur s'est produite, contacte un membre du Staff ! (Invalid buy price)");
 						e.player.closeInventory();
 						ServerUtils.permMsg("errorlog", "§cShop : L'item "+ml.sitem.type+":"+ml.sitem.meta+" à un prix invalide !");
 					}
 					if(e.click==MenuClickEvent.ClickType.LEFT) {
-						if (ml.sitem.getBuyPrice() != 0) openBuyShop(e.player, ml);
+						if (ml.sitem.buyPrice != 0) openBuyShop(e.player, ml);
 					}else if(e.click==MenuClickEvent.ClickType.RIGHT){
-						if (ml.sitem.getSellPrice() != 0) openSellShop(e.player, ml);
+						if (ml.sitem.sellPrice != 0) openSellShop(e.player, ml);
 					}else{
 						ServerUtils.permMsg("log.shoperror", "§cShop : Action de click non reconnue !");
 						e.player.sendMessage("§cUne erreur s'est produite, contacte un membre du Staff ! (No such action)");
@@ -229,13 +228,13 @@ public class InvsManager {
 		ItemStack item;
 		ItemMeta meta;
 		for (int i = 0; i < ml.sitem.maxMeta; i++) {
-			item = new ItemStack(ml.sitem.type, 1, (short) i);
+			item = new ItemStack(ml.sitem.type, ml.sitem.by, (short) i);
 			meta = item.getItemMeta();
 			lore = new ArrayList<>();
-			if (ml.sitem.getBuyPrice() == 0) lore.add("§2Achat Impossible");
-			else lore.add("§2Prix : §a" + ml.sitem.getBuyPrice() + "§2$ (Click gauche pour acheter)");
-			if (ml.sitem.getSellPrice() == 0) lore.add("§2Vente impossible");
-			else lore.add("§2Vente: §a" + ml.sitem.getSellPrice() + "§2$ (Click droit pour vendre)");
+			if (ml.sitem.buyPrice == 0) lore.add("§2Achat Impossible");
+			else lore.add("§2Prix: §a" + ml.sitem.buyPrice + "§2$ (Click gauche pour acheter)");
+			if (ml.sitem.sellPrice == 0) lore.add("§2Vente impossible");
+			else lore.add("§2Vente: §a" + ml.sitem.sellPrice + "§2$ (Click droit pour vendre)");
 			meta.setLore(lore);
 			item.setItemMeta(meta);
 			inv.setItem(i, item);
@@ -263,10 +262,10 @@ public class InvsManager {
 			if (e.slot == 0) openSubShop(e.player, ml.shop, ml.page);
 			else{
 				int itemNum;
-				if (e.slot == 11) itemNum = 1;
-				else if (e.slot == 15) itemNum = 64;
+				if (e.slot == 11) itemNum = ml.sitem.by;
+				else if (e.slot == 15) itemNum = ml.sitem.by_max;
 				else return;
-				int pay = ml.sitem.getBuyPrice() * itemNum;
+				int pay = ml.sitem.buyPrice * itemNum;
 				if (ml.sp.getMoney() < pay) {
 					e.player.sendMessage("§cTu n'as pas assez d'argent !");
 					e.player.closeInventory();
@@ -303,33 +302,46 @@ public class InvsManager {
 		item = new ItemStack(ml.sitem.type, 1, (ml.meta != 0) ? ml.meta : ml.sitem.meta);
 		meta = item.getItemMeta();
 		ArrayList<String> lore = new ArrayList<>();
-		lore.add("§3Unité: " + ml.sitem.getBuyPrice() + "$");
-		lore.add("§3Stack: " + (ml.sitem.getBuyPrice() * 64)+ "$");
+		if(ml.sitem.by==1){
+			lore.add("§3Unité: " + ml.sitem.buyPrice + "$");
+			lore.add("§3Stack: " + (ml.sitem.buyPrice * 64)+ "$");
+		}else{
+			lore.add("§3"+ml.sitem.by+": " + ml.sitem.buyPrice + "$");
+			lore.add("§3"+ml.sitem.by*ml.sitem.by_max+": " + (ml.sitem.buyPrice * ml.sitem.by_max)+ "$");
+		}
 		meta.setLore(lore);
 		item.setItemMeta(meta);
 		inv.setItem(13, item);
 
 		item = new ItemStack(STAINED_GLASS_PANE, 1, (short)5);
 		meta = item.getItemMeta();
-		meta.setDisplayName("§2Acheter à l'unité");
+		if(ml.sitem.by==1){
+			meta.setDisplayName("§2Acheter à l'unité");
+		}else{
+			meta.setDisplayName("§2Acheter "+ml.sitem.by);
+		}
 		lore = new ArrayList<>();
-		lore.add("§3Prix: " +  ml.sitem.getBuyPrice() + "$");
+		lore.add("§3Prix: " +  ml.sitem.buyPrice + "$");
 		meta.setLore(lore);
 		item.setItemMeta(meta);
 		inv.setItem(11, item);
 
 		item = new ItemStack(STAINED_GLASS_PANE, 1, (short)5);
 		meta = item.getItemMeta();
-		meta.setDisplayName("§2Acheter par stack");
+		if(ml.sitem.by==1){
+			meta.setDisplayName("§2Acheter par stack");
+		}else{
+			meta.setDisplayName("§2Acheter "+ml.sitem.by*ml.sitem.by_max);
+		}
 		lore = new ArrayList<>();
-		lore.add("§3Prix: " + (ml.sitem.getBuyPrice() * 64) + "$");
+		lore.add("§3Prix: " + (ml.sitem.buyPrice * 64) + "$");
 		meta.setLore(lore);
 		item.setItemMeta(meta);
 		inv.setItem(15, item);
 
 		item = new ItemStack(STAINED_GLASS_PANE, 1, (short)8);
 		meta = item.getItemMeta();
-		meta.setDisplayName("/");
+		meta.setDisplayName("");
 		item.setItemMeta(meta);
 		for (int i = 0; i < 27; i++) if (!(i == 0 || i == 11 || i == 13 || i == 15)) inv.setItem(i, item);
 
@@ -341,21 +353,22 @@ public class InvsManager {
 		@Override
 		public void onMenuClick(MenuClickEvent e) {
 			MenuLink ml = (MenuLink) e.data;
-			int itemNum,cu = 0;
+			int itemNum;
+			int collect = 0;
 			if (e.slot == 0) openSubShop(e.player, ml.shop, ml.page);
 			else{
-				if (e.slot == 11) itemNum = 1;
-				else if (e.slot == 15) itemNum = 64;
+				if (e.slot == 11) itemNum = ml.sitem.by;
+				else if (e.slot == 15) itemNum = ml.sitem.by*ml.sitem.by_max;
 				else return;
 				HashMap<Integer, ItemStack> real = new HashMap<>();
 				for(Map.Entry<Integer, ? extends ItemStack> item : e.player.getInventory().all(ml.sitem.type).entrySet()){
 					if(item.getValue().getDurability()==((ml.meta != 0) ? ml.meta : ml.sitem.meta)){
-						cu+=item.getValue().getAmount();
+						collect+=item.getValue().getAmount();
 						real.put(item.getKey(), item.getValue());
-						if(cu>=itemNum)break;
+						if(collect>=itemNum)break;
 					}
 				}
-				if(cu>=itemNum){
+				if(collect>=itemNum){
 					for	(Map.Entry<Integer, ItemStack> slot: real.entrySet()) {
 						if (slot.getValue().getAmount() < itemNum){
 							e.player.getInventory().setItem(slot.getKey(), null);
@@ -365,14 +378,14 @@ public class InvsManager {
 							break;
 						}
 					}
-					ml.sp.addMoney(ml.sitem.getSellPrice() * itemNum);
+					ml.sp.addMoney(ml.sitem.sellPrice * itemNum);
 				}else e.player.sendMessage("§cTu n'as pas assez d'items dans ton inventaire !");
 			}
 		}
 	};
 
 	public static void openSellShop(Player p, MenuLink ml) {
-		Inventory inv = sellShopMenu.createInv(3, "§cVendre>>", ml);
+		Inventory inv = sellShopMenu.createInv(3, "§cVente>>", ml);
 
 		ItemStack item = new ItemStack(Material.BOOK_AND_QUILL, 1);
 		ItemMeta meta = item.getItemMeta();
@@ -383,33 +396,46 @@ public class InvsManager {
 		item = new ItemStack(ml.sitem.type, 1, (ml.meta != 0) ? ml.meta : ml.sitem.meta);
 		meta = item.getItemMeta();
 		ArrayList<String> lore = new ArrayList<>();
-		lore.add("§3Unité: " + ml.sitem.getSellPrice() + "$");
-		lore.add("§3Stack: " + (ml.sitem.getSellPrice() * 64) + "$");
+		if(ml.sitem.by==1){
+			lore.add("§3Unité: §b" + ml.sitem.sellPrice + "§3$");
+			lore.add("§3Stack: §b" + (ml.sitem.sellPrice * 64)+ "§3$");
+		}else{
+			lore.add("§3"+ml.sitem.by+": §b" + ml.sitem.sellPrice + "§3$");
+			lore.add("§3"+ml.sitem.by*ml.sitem.by_max+": §b" + (ml.sitem.sellPrice * ml.sitem.by_max)+ "§3$");
+		}
 		meta.setLore(lore);
 		item.setItemMeta(meta);
 		inv.setItem(13, item);
 
 		item = new ItemStack(STAINED_GLASS_PANE, 1, (short)5);
 		meta = item.getItemMeta();
-		meta.setDisplayName("§2Vendre à l'unité");
+		if(ml.sitem.by==1){
+			meta.setDisplayName("§2Vendre à l'unité");
+		}else{
+			meta.setDisplayName("§2Vendre "+ml.sitem.by);
+		}
 		lore = new ArrayList<>();
-		lore.add("§3Prix: " + ml.sitem.getSellPrice() + "$");
+		lore.add("§3Prix: " + ml.sitem.sellPrice + "$");
 		meta.setLore(lore);
 		item.setItemMeta(meta);
 		inv.setItem(11, item);
 
 		item = new ItemStack(STAINED_GLASS_PANE, 1, (short)5);
 		meta = item.getItemMeta();
-		meta.setDisplayName("§2Vendre par stack");
+		if(ml.sitem.by==1){
+			meta.setDisplayName("§2Vendre par stack");
+		}else{
+			meta.setDisplayName("§2Vendre "+ml.sitem.by*ml.sitem.by_max);
+		}
 		lore = new ArrayList<>();
-		lore.add("§3Prix: " + (ml.sitem.getSellPrice() * 64) + "$");
+		lore.add("§3Prix: " + (ml.sitem.sellPrice * 64) + "$");
 		meta.setLore(lore);
 		item.setItemMeta(meta);
 		inv.setItem(15, item);
 
 		item = new ItemStack(STAINED_GLASS_PANE, 1, (short)8);
 		meta = item.getItemMeta();
-		meta.setDisplayName("/");
+		meta.setDisplayName("");
 		item.setItemMeta(meta);
 		for (int i = 0; i < 27; i++) if (!(i == 0 || i == 11 || i == 13 || i == 15)) inv.setItem(i, item);
 

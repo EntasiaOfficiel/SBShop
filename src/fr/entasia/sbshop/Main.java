@@ -63,15 +63,26 @@ public class Main extends JavaPlugin {
 				sitem.type = Material.getMaterial(cs2.getString("type").toUpperCase());
 				sitem.maxMeta = (short) cs2.getInt("maxMeta");
 				if(sitem.maxMeta==0) sitem.meta = (short) cs2.getInt("meta");
-				sitem.buy = cs2.getInt("buy");
-				sitem.sell = cs2.getInt("sell");
+				sitem.by = cs2.getInt("by", 1);
 				sitem.modifier = cs2.getInt("price-modifier", 1);
+				sitem.buyPrice = cs2.getInt("buy") * sitem.modifier * sitem.shop.price_modifier * Main.global_modifier;
+				sitem.sellPrice = cs2.getInt("sell") * sitem.modifier * sitem.shop.price_modifier * Main.global_modifier;
+
+				// sitem.by = 6;
+				// 6 * x <= 64
+				// x <= 64/6
+				// x <= 10
+				// nombre max = 10
+
+				sitem.by_max = 64/sitem.by;
 
 				if(sitem.type==null)warn(cat, cs2.getString("type"), sitem.meta, "Type invalide");
-				else if(sitem.sell<0)warn(cat, cs2.getString("type"), sitem.meta, "Prie de vente négatif");
-				else if(sitem.buy<0)warn(cat, cs2.getString("type"), sitem.meta, "Prie d'achat négatif");
-				else if(sitem.sell>sitem.buy)warn(cat, cs2.getString("type"), sitem.meta, "Prix de vente plus haut que celui d'achat");
-				else cat.items.add(sitem);
+				else if(sitem.sellPrice <0)warn(cat, cs2.getString("type"), sitem.meta, "Prie de vente négatif");
+				else if(sitem.buyPrice <0)warn(cat, cs2.getString("type"), sitem.meta, "Prie d'achat négatif");
+				else if(sitem.sellPrice >sitem.buyPrice)warn(cat, cs2.getString("type"), sitem.meta, "Prix de vente plus haut que celui d'achat");
+				else{
+					cat.items.add(sitem);
+				}
 			}
 		}
 	}

@@ -11,9 +11,12 @@ public class ShopItem {
 	public short meta;
 	public short maxMeta;
 
+	public int by;
+	public int by_max = 1; // Multiplicateur seulement
 
-	public int buy;
-	public int sell;
+
+	public int buyPrice;
+	public int sellPrice;
 
 	public int modifier;
 
@@ -27,14 +30,5 @@ public class ShopItem {
 //		this.type = type;
 //		this.modifier = modifier;
 //	}
-
-
-	public int getBuyPrice(){
-		return buy * modifier * shop.price_modifier * Main.global_modifier;
-	}
-
-	public int getSellPrice(){
-		return sell * modifier * shop.price_modifier * Main.global_modifier;
-	}
 
 }
