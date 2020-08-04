@@ -141,14 +141,14 @@ public class InvsManager {
 			item = new ItemStack(sitem.type, sitem.by, sitem.meta);
 			meta = item.getItemMeta();
 			lore = new ArrayList<>();
-			if (sitem.maxMeta > 0){
+			if (sitem.buyPrice == 0) lore.add("§cAchat Impossible");
+			else lore.add("§2Prix: §a" + sitem.buyPrice + "§2 (Click gauche pour acheter)");
+			if (sitem.sellPrice == 0) lore.add("§cVente impossible");
+			else lore.add("§2Vente: §a" + sitem.sellPrice + "§2 (Click droit pour vendre)");
+
+			if (sitem.maxMeta > 0) {
 				item.setDurability((short) 0);
 				lore.add("§6Clique pour voir plus de choix");
-			}else{
-				if (sitem.buyPrice == 0) lore.add("§cAchat Impossible");
-				else lore.add("§2Prix: §a" + sitem.buyPrice + "§2 (Click gauche pour acheter)");
-				if (sitem.sellPrice == 0) lore.add("§cVente impossible");
-				else lore.add("§2Vente: §a" + sitem.sellPrice + "§2 (Click droit pour vendre)");
 			}
 			meta.setLore(lore);
 			item.setItemMeta(meta);
