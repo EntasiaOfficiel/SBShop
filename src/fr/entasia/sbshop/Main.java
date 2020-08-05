@@ -79,9 +79,9 @@ public class Main extends JavaPlugin {
 				sitem.by_mult = 64/sitem.by;
 
 				if(sitem.type==null)warn(cat, cs2.getString("type"), sitem.meta, "Type invalide");
-				else if(sitem.sellPrice <0)warn(cat, cs2.getString("type"), sitem.meta, "Prie de vente négatif");
-				else if(sitem.buyPrice <0)warn(cat, cs2.getString("type"), sitem.meta, "Prie d'achat négatif");
-				else if(sitem.sellPrice >sitem.buyPrice)warn(cat, cs2.getString("type"), sitem.meta, "Prix de vente plus haut que celui d'achat");
+				else if(sitem.sellPrice<0)warn(cat, cs2.getString("type"), sitem.meta, "Prie de vente négatif");
+				else if(sitem.buyPrice<0)warn(cat, cs2.getString("type"), sitem.meta, "Prie d'achat négatif");
+				else if(sitem.buyPrice!=0&&sitem.sellPrice>sitem.buyPrice)warn(cat, cs2.getString("type"), sitem.meta, "Prix de vente plus haut que celui d'achat");
 				else{
 					cat.items.add(sitem);
 				}
