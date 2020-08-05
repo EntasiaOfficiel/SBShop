@@ -263,7 +263,7 @@ public class InvsManager {
 			else{
 				int itemNum;
 				if (e.slot == 11) itemNum = ml.sitem.by;
-				else if (e.slot == 15) itemNum = ml.sitem.by_mult;
+				else if (e.slot == 15) itemNum = ml.sitem.by*ml.sitem.by_mult;
 				else return;
 				int pay = ml.sitem.buyPrice * itemNum;
 				if (ml.sp.getMoney() < pay) {
@@ -279,7 +279,7 @@ public class InvsManager {
 							}
 						}
 						if (possible < itemNum) {
-							e.player.sendMessage("§cTu n'as pas assez de slots libres");
+							e.player.sendMessage("§cTon inventaire ne peut pas contenir cet achat !");
 							return;
 						}
 					}
@@ -299,7 +299,7 @@ public class InvsManager {
 		item.setItemMeta(meta);
 		inv.setItem(0, item);
 
-		item = new ItemStack(ml.sitem.type, 1, (ml.meta != 0) ? ml.meta : ml.sitem.meta);
+		item = new ItemStack(ml.sitem.type, ml.sitem.by, (ml.meta != 0) ? ml.meta : ml.sitem.meta);
 		meta = item.getItemMeta();
 		ArrayList<String> lore = new ArrayList<>();
 		if(ml.sitem.by==1){
@@ -393,7 +393,7 @@ public class InvsManager {
 		item.setItemMeta(meta);
 		inv.setItem(0, item);
 
-		item = new ItemStack(ml.sitem.type, 1, (ml.meta != 0) ? ml.meta : ml.sitem.meta);
+		item = new ItemStack(ml.sitem.type, ml.sitem.by, (ml.meta != 0) ? ml.meta : ml.sitem.meta);
 		meta = item.getItemMeta();
 		ArrayList<String> lore = new ArrayList<>();
 		if(ml.sitem.by==1){
