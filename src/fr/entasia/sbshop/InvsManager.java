@@ -262,10 +262,13 @@ public class InvsManager {
 			if (e.slot == 0) openSubShop(e.player, ml.shop, ml.page);
 			else{
 				int itemNum;
+				int pay = ml.sitem.buyPrice;
 				if (e.slot == 11) itemNum = ml.sitem.by;
-				else if (e.slot == 15) itemNum = ml.sitem.by*ml.sitem.by_mult;
+				else if (e.slot == 15){
+					itemNum = ml.sitem.by*ml.sitem.by_mult;
+					pay*=ml.sitem.by_mult;
+				}
 				else return;
-				int pay = ml.sitem.buyPrice * itemNum;
 				if (ml.sp.getMoney() < pay) {
 					e.player.sendMessage("§cTu n'as pas assez d'argent !");
 					e.player.closeInventory();
