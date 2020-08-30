@@ -100,7 +100,7 @@ public class InvsManager {
 					e.player.sendMessage("§cUne erreur s'est produite ! Merci de contacter un membre du Staff");
 					ServerUtils.permMsg("log.shoperror", "§cShop : Item invalide demandé dans le shop ! "+e.item.getType()+":"+e.item.getDurability());
 				}else{
-					ml.sp = BaseAPI.getOnlineSP(e.player.getUniqueId());
+					ml.sp = BaseAPI.getOnlineSP(e.player);
 					if (ml.sitem.maxMeta > 0) openMetasShop(e.player, ml);
 					else {
 						if(e.click==MenuClickEvent.ClickType.LEFT) {
@@ -200,7 +200,7 @@ public class InvsManager {
 					e.player.sendMessage("§cUne erreur s'est produite ! Merci de contacter un membre du Staff");
 					ServerUtils.permMsg("errorlog", "Item invalide demandé dans le shop ! "+e.item.getType()+":"+e.item.getDurability());
 				}else{
-					ml.sp = BaseAPI.getOnlineSP(e.player.getUniqueId());
+					ml.sp = BaseAPI.getOnlineSP(e.player);
 					if(ml.sitem.buyPrice<=1){
 						e.player.sendMessage("§cUne erreur s'est produite, contacte un membre du Staff ! (Invalid buy price)");
 						e.player.closeInventory();
