@@ -227,8 +227,9 @@ public class InvsManager {
 		ArrayList<String> lore;
 		ItemStack item;
 		ItemMeta meta;
-		for (int i = 0; i <= ml.sitem.maxMeta; i++) {
+		for (int i = 0; i < ml.sitem.maxMeta; i++) {
 			item = new ItemStack(ml.sitem.type, ml.sitem.by, (short) i);
+
 			meta = item.getItemMeta();
 			lore = new ArrayList<>();
 			if (ml.sitem.buyPrice == 0) lore.add("§2Achat Impossible");
