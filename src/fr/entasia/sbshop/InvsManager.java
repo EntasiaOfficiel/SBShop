@@ -26,7 +26,7 @@ import static org.bukkit.Material.STAINED_GLASS_PANE;
 
 public class InvsManager {
 
-	public static MenuCreator mainShopMenu = new MenuCreator(null, null) {
+	public static MenuCreator mainShopMenu = new MenuCreator() {
 		@Override
 		public void onMenuClick(MenuClickEvent e) {
 			switch (e.item.getType()) {
@@ -87,7 +87,7 @@ public class InvsManager {
 
 
 
-	public static MenuCreator subShopMenu = new MenuCreator(new MenuFlag[]{MenuFlag.AllItemsTrigger}, null) {
+	public static MenuCreator subShopMenu = new MenuCreator() {
 		@Override
 		public void onMenuClick(MenuClickEvent e) {
 			MenuLink ml = (MenuLink)e.data;
@@ -116,7 +116,7 @@ public class InvsManager {
 				}
 			}
 		}
-	};
+	}.setFlags(MenuFlag.AllItemsTrigger);
 
 	public static void openSubShop(Player p, SubShop sub, int pagen) {
 		Inventory inv = subShopMenu.createInv(6, "§5Shop>> " + sub.title + " §5Page: §6 " + (pagen+1), new MenuLink(sub, pagen));
@@ -168,14 +168,14 @@ public class InvsManager {
 			smeta = (SkullMeta)item.getItemMeta();
 			smeta.setDisplayName("§cPage précédente");
 			item.setItemMeta(smeta);
-			ItemUtils.placeSkullAsync(inv, 48, item, "MHF_ArrowLeft", Main.main);
+			ItemUtils.placeSkullAsync(inv, 48, item, "MHF_ArrowLeft");
 		}
 		if (sub.items.size() > max) {
 			item = new ItemStack(Material.SKULL_ITEM, 1, (short)3);
 			smeta = (SkullMeta)item.getItemMeta();
 			smeta.setDisplayName("§cPage suivante");
 			item.setItemMeta(smeta);
-			ItemUtils.placeSkullAsync(inv, 50, item, "MHF_ArrowRight", Main.main);
+			ItemUtils.placeSkullAsync(inv, 50, item, "MHF_ArrowRight");
 		}
 
 		item = new ItemStack(Material.BOOK_AND_QUILL, 1);
@@ -188,7 +188,7 @@ public class InvsManager {
 		p.playSound(p.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 3.5f, 1.1f);
 	}
 
-	public static MenuCreator metasShopMenu = new MenuCreator(new MenuFlag[]{MenuFlag.AllItemsTrigger}, null) {
+	public static MenuCreator metasShopMenu = new MenuCreator() {
 		@Override
 		public void onMenuClick(MenuClickEvent e) {
 			MenuLink ml = (MenuLink)e.data;
@@ -218,7 +218,7 @@ public class InvsManager {
 				}
 			}
 		}
-	};
+	}.setFlags(MenuFlag.AllItemsTrigger);
 
 	public static void openMetasShop(Player p, MenuLink ml) {
 		Inventory inv = metasShopMenu.createInv(4, "§5Shop>> §2Types", ml);
@@ -255,7 +255,7 @@ public class InvsManager {
 		p.playSound(p.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 3.5f, 1.1f);
 	}
 
-	public static MenuCreator buyShopMenu = new MenuCreator(null, null) {
+	public static MenuCreator buyShopMenu = new MenuCreator() {
 		@Override
 		public void onMenuClick(MenuClickEvent e) {
 			MenuLink ml = (MenuLink) e.data;
@@ -352,7 +352,7 @@ public class InvsManager {
 		p.playSound(p.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 3.5f, 1.1f);
 	}
 
-	public static MenuCreator sellShopMenu = new MenuCreator(null, null) {
+	public static MenuCreator sellShopMenu = new MenuCreator() {
 		@Override
 		public void onMenuClick(MenuClickEvent e) {
 			MenuLink ml = (MenuLink) e.data;
