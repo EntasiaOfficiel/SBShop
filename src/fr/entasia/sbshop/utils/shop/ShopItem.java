@@ -1,7 +1,5 @@
 package fr.entasia.sbshop.utils.shop;
 
-import org.bukkit.Material;
-
 public class ShopItem extends ShopProduct {
 
 	public ShopItem(SubShop shop){

@@ -5,11 +5,9 @@ import fr.entasia.apis.menus.MenuCreator;
 import fr.entasia.apis.menus.MenuFlag;
 import fr.entasia.apis.utils.ItemUtils;
 import fr.entasia.apis.utils.ServerUtils;
-import fr.entasia.sbshop.utils.shop.ShopCat;
-import fr.entasia.sbshop.utils.shop.ShopItem;
+import fr.entasia.sbshop.utils.links.MenuLink;
 import fr.entasia.sbshop.utils.shop.ShopProduct;
 import fr.entasia.sbshop.utils.shop.SubShop;
-import fr.entasia.sbshop.utils.links.MenuLink;
 import fr.entasia.skycore.apis.BaseAPI;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -20,7 +18,9 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
 import java.lang.reflect.Field;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 public class BaseInvs {
 

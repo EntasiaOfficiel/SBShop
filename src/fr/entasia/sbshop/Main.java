@@ -1,6 +1,5 @@
 package fr.entasia.sbshop;
 
-import com.destroystokyo.paper.MaterialSetTag;
 import com.destroystokyo.paper.MaterialTags;
 import fr.entasia.sbshop.commands.ShopCmd;
 import fr.entasia.sbshop.commands.ShopReloadCmd;
@@ -14,7 +13,6 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.Map;
 
 public class Main extends JavaPlugin {
