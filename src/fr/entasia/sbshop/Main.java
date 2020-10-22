@@ -67,7 +67,7 @@ public class Main extends JavaPlugin {
 				sitem = new ShopItem(sub);
 				sitem.icon = Material.getMaterial(e.getKey());
 				if (sitem.icon == null) warn(sub, e.getKey(), "Type invalide");
-				else if(!completeProduct(sitem, cs2))sub.items.add(sitem);
+				else if(completeProduct(sitem, cs2))sub.items.add(sitem);
 			}
 		}
 

@@ -122,10 +122,10 @@ public class BaseInvs {
 	public static void openSubShop(Player p, SubShop sub, int pagen) {
 		Inventory inv = subShopMenu.createInv(6, "§5Shop>> " + sub.title + " §5Page: §6 " + (pagen+1), new MenuLink(sub, pagen));
 
-
 		// 36 = 4 lignes
 		int min = pagen*36;
-		int count=0;
+		int count = 0;
+		boolean nextPage = true;
 		ItemStack item;
 		Iterator<? extends ShopProduct> ite;
 
@@ -142,17 +142,19 @@ public class BaseInvs {
 //		p.sendMessage("§cCe numéro de page est trop grand !");
 //		return;
 
-		ShopCat cat;
-
 		if(min<sub.cats.size()){
 			int temp = count%9;
 			if(temp!=0){
 				count+=9-(temp);
 			}
 			ite = iterator(sub.cats, min);
-			while(ite.hasNext()&&count<36){
-				cat = (ShopCat) ite.next();
-				item = setupSellItem(cat, true);
+			while(count<36){
+				if(!ite.hasNext()){
+					nextPage = false;
+					break;
+				}
+
+				item = setupSellItem(ite.next(), true);
 				inv.setItem(count, item);
 				count++;
 			}
@@ -172,7 +174,7 @@ public class BaseInvs {
 			item.setItemMeta(smeta);
 			ItemUtils.placeSkullAsync(inv, 48, item, "MHF_ArrowLeft");
 		}
-		if (count!=36) {
+		if (nextPage) {
 			item = new ItemStack(Material.PLAYER_HEAD);
 			smeta = (SkullMeta)item.getItemMeta();
 			smeta.setDisplayName("§cPage suivante");
