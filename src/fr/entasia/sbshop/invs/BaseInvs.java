@@ -103,7 +103,7 @@ public class BaseInvs {
 						BuySellInvs.openCatShop(e.player, ml);
 					}
 				}else {
-					ml.selected = ((ShopItem)ml.sproduct).type;
+					ml.selected = ((ShopItem)ml.sproduct).icon;
 					if (e.click == MenuClickEvent.ClickType.LEFT) {
 						if (ml.sproduct.buyPrice != 0) BuySellInvs.openBuyShop(e.player, ml);
 					} else if (e.click == MenuClickEvent.ClickType.RIGHT) {

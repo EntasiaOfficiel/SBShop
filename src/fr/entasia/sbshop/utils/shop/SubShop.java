@@ -23,7 +23,7 @@ public enum SubShop {
 
 	public ShopItem getItem(Material type){
 		for(ShopItem sitem : items){
-			if(sitem.type==type)return sitem;
+			if(sitem.icon==type)return sitem;
 		}
 		return null;
 	}

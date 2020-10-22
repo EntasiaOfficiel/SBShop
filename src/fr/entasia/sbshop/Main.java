@@ -1,5 +1,6 @@
 package fr.entasia.sbshop;
 
+import com.destroystokyo.paper.MaterialSetTag;
 import com.destroystokyo.paper.MaterialTags;
 import fr.entasia.sbshop.commands.ShopCmd;
 import fr.entasia.sbshop.commands.ShopReloadCmd;
@@ -64,8 +65,8 @@ public class Main extends JavaPlugin {
 				cs2 = (ConfigurationSection) e.getValue();
 
 				sitem = new ShopItem(sub);
-				sitem.type = Material.getMaterial(cs2.getString("type").toUpperCase());
-				if (sitem.type == null) warn(sub, cs2.getString("type"), "Type invalide");
+				sitem.icon = Material.getMaterial(e.getKey());
+				if (sitem.icon == null) warn(sub, e.getKey(), "Type invalide");
 				else if(!completeProduct(sitem, cs2))sub.items.add(sitem);
 			}
 		}
@@ -84,7 +85,7 @@ public class Main extends JavaPlugin {
 					try {
 						f = MaterialTags.class.getDeclaredField(e.getKey());
 					} catch (NoSuchFieldException ignore2) {
-						warn(sub, cs2.getString("type"), "Catégorie invalide : " + e.getKey());
+						warn(sub, e.getKey(), "Catégorie invalide : " + e.getKey());
 						continue;
 					}
 				}
@@ -103,10 +104,10 @@ public class Main extends JavaPlugin {
 		product.sellPrice = sec.getInt("sell") * product.modifier * product.shop.price_modifier * Main.global_modifier;
 		product.by_mult = 64 / product.by;
 
-		if (product.sellPrice < 0) warn(product.shop, sec.getString("type"), "Prie de vente négatif");
-		else if (product.buyPrice < 0) warn(product.shop, sec.getString("type"), "Prie d'achat négatif");
+		if (product.sellPrice < 0) warn(product.shop, product.icon, "Prie de vente négatif");
+		else if (product.buyPrice < 0) warn(product.shop, product.icon, "Prie d'achat négatif");
 		else if (product.buyPrice != 0 && product.sellPrice > product.buyPrice)
-			warn(product.shop, sec.getString("type"), "Prix de vente plus haut que celui d'achat");
+			warn(product.shop, product.icon, "Prix de vente plus haut que celui d'achat");
 		else return true;
 		return false;
 
@@ -121,7 +122,7 @@ public class Main extends JavaPlugin {
 
 	}
 
-	private static void warn(SubShop sub, String identifier, String msg){
+	private static void warn(SubShop sub, Object identifier, String msg){
 		main.getLogger().warning("Erreur sur le produit "+identifier+" (catégorie "+sub.name()+") : "+msg);
 	}
 }

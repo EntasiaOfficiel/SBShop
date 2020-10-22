@@ -4,8 +4,6 @@ import org.bukkit.Material;
 
 public class ShopItem extends ShopProduct {
 
-	public Material type;
-
 	public ShopItem(SubShop shop){
 		this.shop = shop;
 	}
