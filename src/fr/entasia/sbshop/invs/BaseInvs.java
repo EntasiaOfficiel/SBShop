@@ -5,6 +5,7 @@ import fr.entasia.apis.menus.MenuCreator;
 import fr.entasia.apis.menus.MenuFlag;
 import fr.entasia.apis.utils.ItemUtils;
 import fr.entasia.apis.utils.ServerUtils;
+import fr.entasia.sbshop.utils.shop.ShopCat;
 import fr.entasia.sbshop.utils.shop.ShopItem;
 import fr.entasia.sbshop.utils.shop.ShopProduct;
 import fr.entasia.sbshop.utils.shop.SubShop;
@@ -30,7 +31,7 @@ public class BaseInvs {
 				case APPLE:
 					openSubShop(e.player, SubShop.FOOD, 0);
 					break;
-				case GRASS:
+				case GRASS_BLOCK:
 					openSubShop(e.player, SubShop.BLOCKS, 0);
 					break;
 				case LAPIS_ORE:
@@ -103,7 +104,7 @@ public class BaseInvs {
 						BuySellInvs.openCatShop(e.player, ml);
 					}
 				}else {
-					ml.selected = ((ShopItem)ml.sproduct).icon;
+					ml.selected = ml.sproduct.icon;
 					if (e.click == MenuClickEvent.ClickType.LEFT) {
 						if (ml.sproduct.buyPrice != 0) BuySellInvs.openBuyShop(e.player, ml);
 					} else if (e.click == MenuClickEvent.ClickType.RIGHT) {
@@ -131,15 +132,17 @@ public class BaseInvs {
 		if(min<sub.items.size()){
 			ite = iterator(sub.items, min);
 			while(ite.hasNext()&&count<36){
-				count++;
 				item = setupSellItem(ite.next(), false);
 				inv.setItem(count, item);
+				count++;
 			}
 			min = 0;
 		}else min = min - sub.items.size();
 
 //		p.sendMessage("§cCe numéro de page est trop grand !");
 //		return;
+
+		ShopCat cat;
 
 		if(min<sub.cats.size()){
 			int temp = count%9;
@@ -148,9 +151,10 @@ public class BaseInvs {
 			}
 			ite = iterator(sub.cats, min);
 			while(ite.hasNext()&&count<36){
-				count++;
-				item = setupSellItem(ite.next(), true);
+				cat = (ShopCat) ite.next();
+				item = setupSellItem(cat, true);
 				inv.setItem(count, item);
+				count++;
 			}
 		}else count = 36; // just for future condition
 

@@ -93,6 +93,7 @@ public class Main extends JavaPlugin {
 				scat.icon = scat.cat.getValues().iterator().next();
 
 				if (completeProduct(scat, cs2)) sub.cats.add(scat);
+
 			}
 		}
 	}
