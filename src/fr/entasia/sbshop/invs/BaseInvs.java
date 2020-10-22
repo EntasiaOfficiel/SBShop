@@ -5,6 +5,9 @@ import fr.entasia.apis.menus.MenuCreator;
 import fr.entasia.apis.menus.MenuFlag;
 import fr.entasia.apis.utils.ItemUtils;
 import fr.entasia.apis.utils.ServerUtils;
+import fr.entasia.sbshop.utils.shop.ShopItem;
+import fr.entasia.sbshop.utils.shop.ShopProduct;
+import fr.entasia.sbshop.utils.shop.SubShop;
 import fr.entasia.sbshop.utils.links.MenuLink;
 import fr.entasia.skycore.apis.BaseAPI;
 import org.bukkit.Material;
@@ -91,12 +94,16 @@ public class BaseInvs {
 			else if(e.slot<36){
 				ml.sp = BaseAPI.getOnlineSP(e.player);
 				ml.sproduct = ml.shop.getItem(e.item.getType());
-				if(ml.sproduct ==null){ // TODO PAS FINI ICI
-					ml.shop.getCategory(e.item.getType());
-					BuySellInvs.openCatShop(e.player, ml);
-					e.player.sendMessage("§cUne erreur s'est produite ! Merci de contacter un membre du Staff");
-					ServerUtils.permMsg("log.shoperror", "§cShop : Item invalide demandé dans le shop ! "+e.item.getType()+":"+e.item.getDurability());
+				if(ml.sproduct==null){ // TODO PAS FINI ICI
+					ml.sproduct = ml.shop.getCategory(e.item.getType());
+					if(ml.sproduct==null){
+						e.player.sendMessage("§cUne erreur s'est produite ! Merci de contacter un membre du Staff");
+						ServerUtils.permMsg("log.shoperror", "§cShop : Item invalide demandé dans le shop ! "+e.item.getType());
+					}else{
+						BuySellInvs.openCatShop(e.player, ml);
+					}
 				}else {
+					ml.selected = ((ShopItem)ml.sproduct).type;
 					if (e.click == MenuClickEvent.ClickType.LEFT) {
 						if (ml.sproduct.buyPrice != 0) BuySellInvs.openBuyShop(e.player, ml);
 					} else if (e.click == MenuClickEvent.ClickType.RIGHT) {
@@ -181,7 +188,7 @@ public class BaseInvs {
 
 
 	private static ItemStack setupSellItem(ShopProduct product, boolean cat){
-		ItemStack item = new ItemStack(product.type, product.by);
+		ItemStack item = new ItemStack(product.icon, product.by);
 		ItemMeta meta = item.getItemMeta();
 		ArrayList<String> lore = new ArrayList<>();
 		if (product.buyPrice == 0) lore.add("§cAchat Impossible");

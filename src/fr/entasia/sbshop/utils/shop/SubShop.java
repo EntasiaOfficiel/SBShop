@@ -1,8 +1,9 @@
-package fr.entasia.sbshop.utils;
+package fr.entasia.sbshop.utils.shop;
 
 import org.bukkit.Material;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public enum SubShop {
 	BLOCKS("§2Blocks"),
@@ -12,8 +13,8 @@ public enum SubShop {
 	HARVEST("§5Récoltes");
 
 	public String title;
-	public ArrayList<ShopCat> cats;
-	public ArrayList<ShopItem> items;
+	public List<ShopCat> cats = new ArrayList<>();
+	public List<ShopItem> items = new ArrayList<>();
 	public int price_modifier;
 
 	SubShop(String title){
@@ -29,7 +30,7 @@ public enum SubShop {
 
 	public ShopCat getCategory(Material type){
 		for(ShopCat scat : cats){
-			if(scat.icon==type)return scat;
+			if(scat.icon ==type)return scat;
 		}
 		return null;
 	}

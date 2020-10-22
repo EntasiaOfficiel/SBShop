@@ -4,9 +4,8 @@ import fr.entasia.apis.menus.MenuClickEvent;
 import fr.entasia.apis.menus.MenuCreator;
 import fr.entasia.apis.menus.MenuFlag;
 import fr.entasia.apis.utils.ServerUtils;
-import fr.entasia.sbshop.utils.links.CatLink;
 import fr.entasia.sbshop.utils.links.MenuLink;
-import fr.entasia.sbshop.utils.ShopCat;
+import fr.entasia.sbshop.utils.shop.ShopCat;
 import fr.entasia.skycore.apis.BaseAPI;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -41,7 +40,7 @@ public class BuySellInvs {
                 }else{
                     if (e.player.getInventory().firstEmpty() == -1) {
                         int possible = 0;
-                        for (Map.Entry<Integer, ? extends ItemStack> slot : e.player.getInventory().all(ml.sproduct.type).entrySet()) {
+                        for (Map.Entry<Integer, ? extends ItemStack> slot : e.player.getInventory().all(ml.selected).entrySet()) {
                             possible += (64 - slot.getValue().getAmount());
                             if (possible >= itemNum) break;
                         }
@@ -51,7 +50,7 @@ public class BuySellInvs {
                         }
                     }
                     ml.sp.withdrawMoney(pay);
-                    e.player.getInventory().addItem(new ItemStack(ml.sproduct.type, itemNum));
+                    e.player.getInventory().addItem(new ItemStack(ml.selected, itemNum));
                 }
             }
         }
@@ -66,7 +65,7 @@ public class BuySellInvs {
         item.setItemMeta(meta);
         inv.setItem(0, item);
 
-        item = new ItemStack(ml.sproduct.type, ml.sproduct.by);
+        item = new ItemStack(ml.selected, ml.sproduct.by);
         meta = item.getItemMeta();
         ArrayList<String> lore = new ArrayList<>();
         if(ml.sproduct.by==1){
@@ -128,7 +127,7 @@ public class BuySellInvs {
                 else if (e.slot == 15) itemNum = ml.sproduct.by*ml.sproduct.by_mult;
                 else return;
                 HashMap<Integer, ItemStack> real = new HashMap<>();
-                for(Map.Entry<Integer, ? extends ItemStack> item : e.player.getInventory().all(ml.sproduct.type).entrySet()) {
+                for(Map.Entry<Integer, ? extends ItemStack> item : e.player.getInventory().all(ml.selected).entrySet()) {
                     collect += item.getValue().getAmount();
                     real.put(item.getKey(), item.getValue());
                     if (collect >= itemNum) break;
@@ -159,7 +158,7 @@ public class BuySellInvs {
         item.setItemMeta(meta);
         inv.setItem(0, item);
 
-        item = new ItemStack(ml.sproduct.type, ml.sproduct.by);
+        item = new ItemStack(ml.selected, ml.sproduct.by);
         meta = item.getItemMeta();
         ArrayList<String> lore = new ArrayList<>();
         if(ml.sproduct.by==1){
@@ -210,7 +209,7 @@ public class BuySellInvs {
     }
 
 
-    public static MenuCreator metasShopMenu = new MenuCreator() {
+    public static MenuCreator catShopMenu = new MenuCreator() {
         @Override
         public void onMenuClick(MenuClickEvent e) {
             MenuLink ml = (MenuLink)e.data;
@@ -219,7 +218,7 @@ public class BuySellInvs {
                 ml.sproduct = ml.shop.getItem(e.item.getType());
                 if(ml.sproduct ==null){
                     e.player.sendMessage("§cUne erreur s'est produite ! Merci de contacter un membre du Staff");
-                    ServerUtils.permMsg("errorlog", "Item invalide demandé dans le shop ! "+e.item.getType()+":"+e.item.getDurability());
+                    ServerUtils.permMsg("errorlog", "Item invalide demandé dans le shop : "+e.item.getType());
                 }else{
                     ml.sp = BaseAPI.getOnlineSP(e.player);
                     if(ml.sproduct.buyPrice<=1){
@@ -241,15 +240,16 @@ public class BuySellInvs {
         }
     }.setFlags(MenuFlag.AllItemsTrigger);
 
-    public static void openCatShop(Player p, CatLink ml) {
-        Inventory inv = metasShopMenu.createInv(4, "§5Shop>> §2Types", ml);
+    public static void openCatShop(Player p, MenuLink ml) {
+        Inventory inv = catShopMenu.createInv(4, "§5Shop>> §2Types", ml);
 
         ArrayList<String> lore;
         ItemStack item;
         ItemMeta meta;
-        ShopCat cat = (ShopCat) ml.scat;
-        for (int i = 0; i < ml.sproduct.maxMeta; i++) {
-            item = new ItemStack(ml.sproduct.type, ml.sproduct.by, (short) i);
+        ShopCat scat = (ShopCat) ml.sproduct;
+        int i = 0;
+        for (Material m : scat.cat.getValues()) {
+            item = new ItemStack(m, ml.sproduct.by);
 
             meta = item.getItemMeta();
             lore = new ArrayList<>();
@@ -260,11 +260,12 @@ public class BuySellInvs {
             meta.setLore(lore);
             item.setItemMeta(meta);
             inv.setItem(i, item);
+            i++;
         }
 
         // footer | deux lignes
         item = new ItemStack(Material.GRAY_STAINED_GLASS_PANE);
-        for(int i=18;i<27;i++)inv.setItem(i, item);
+        for(i=18;i<27;i++)inv.setItem(i, item);
 
         // return button
         item = new ItemStack(Material.WRITABLE_BOOK);

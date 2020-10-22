@@ -3,10 +3,10 @@ package fr.entasia.sbshop;
 import com.destroystokyo.paper.MaterialTags;
 import fr.entasia.sbshop.commands.ShopCmd;
 import fr.entasia.sbshop.commands.ShopReloadCmd;
-import fr.entasia.sbshop.utils.ShopCat;
-import fr.entasia.sbshop.utils.ShopItem;
-import fr.entasia.sbshop.utils.ShopProduct;
-import fr.entasia.sbshop.utils.SubShop;
+import fr.entasia.sbshop.utils.shop.ShopCat;
+import fr.entasia.sbshop.utils.shop.ShopItem;
+import fr.entasia.sbshop.utils.shop.ShopProduct;
+import fr.entasia.sbshop.utils.shop.SubShop;
 import org.bukkit.Material;
 import org.bukkit.Tag;
 import org.bukkit.configuration.ConfigurationSection;
@@ -50,7 +50,6 @@ public class Main extends JavaPlugin {
 	}
 
 	private static void category(SubShop sub, String a) throws Throwable {
-		sub.items = new ArrayList<>();
 		ConfigurationSection cs = main.getConfig().getConfigurationSection(a);
 		if (cs == null) {
 			main.getLogger().warning("Catégorie de la configuration " + a + " vide !");
@@ -59,36 +58,41 @@ public class Main extends JavaPlugin {
 		sub.price_modifier = cs.getInt("price-modifier");
 
 		ShopItem sitem;
-		ConfigurationSection cs2;
-		for (Map.Entry<String, Object> e : cs.getConfigurationSection("items").getValues(false).entrySet()) {
-			cs2 = (ConfigurationSection) e.getValue();
+		ConfigurationSection cs2 = cs.getConfigurationSection("items");
+		if(cs2!=null){
+			for (Map.Entry<String, Object> e : cs2.getValues(false).entrySet()) {
+				cs2 = (ConfigurationSection) e.getValue();
 
-			sitem = new ShopItem(sub);
-			sitem.type = Material.getMaterial(cs2.getString("type").toUpperCase());
-			if (sitem.type == null) warn(sub, cs2.getString("type"), "Type invalide");
-			else if(!completeProduct(sitem, cs2))sub.items.add(sitem);
+				sitem = new ShopItem(sub);
+				sitem.type = Material.getMaterial(cs2.getString("type").toUpperCase());
+				if (sitem.type == null) warn(sub, cs2.getString("type"), "Type invalide");
+				else if(!completeProduct(sitem, cs2))sub.items.add(sitem);
+			}
 		}
 
 		ShopCat scat;
 		Field f;
-		for (Map.Entry<String, Object> e : cs.getConfigurationSection("categories").getValues(false).entrySet()) {
-			cs2 = (ConfigurationSection) e.getValue();
+		cs2 = cs.getConfigurationSection("categories");
+		if(cs2!=null) {
+			for (Map.Entry<String, Object> e : cs2.getValues(false).entrySet()) {
+				cs2 = (ConfigurationSection) e.getValue();
 
-			scat = new ShopCat(sub);
-			try {
-				f = Tag.class.getDeclaredField(e.getKey());
-			} catch (NoSuchFieldException ignore) {
+				scat = new ShopCat(sub);
 				try {
-					f = MaterialTags.class.getDeclaredField(e.getKey());
-				} catch (NoSuchFieldException ignore2) {
-					warn(sub, cs2.getString("type"), "Catégorie invalide : " + e.getKey());
-					continue;
+					f = Tag.class.getDeclaredField(e.getKey());
+				} catch (NoSuchFieldException ignore) {
+					try {
+						f = MaterialTags.class.getDeclaredField(e.getKey());
+					} catch (NoSuchFieldException ignore2) {
+						warn(sub, cs2.getString("type"), "Catégorie invalide : " + e.getKey());
+						continue;
+					}
 				}
-			}
-			scat.cat = (Tag<Material>) f.get(null);
-			scat.icon = scat.cat.getValues().iterator().next();
+				scat.cat = (Tag<Material>) f.get(null);
+				scat.icon = scat.cat.getValues().iterator().next();
 
-			if(completeProduct(scat, cs2))sub.cats.add(scat);
+				if (completeProduct(scat, cs2)) sub.cats.add(scat);
+			}
 		}
 	}
 

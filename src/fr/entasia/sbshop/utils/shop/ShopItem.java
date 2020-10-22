@@ -1,13 +1,12 @@
-package fr.entasia.sbshop.utils;
+package fr.entasia.sbshop.utils.shop;
 
 import org.bukkit.Material;
-import org.bukkit.Tag;
 
-public class ShopCat extends ShopProduct {
+public class ShopItem extends ShopProduct {
 
-	public Tag<Material> cat;
+	public Material type;
 
-	public ShopCat(SubShop shop){
+	public ShopItem(SubShop shop){
 		this.shop = shop;
 	}
 
