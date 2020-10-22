@@ -1,14 +1,20 @@
 package fr.entasia.sbshop;
 
+import com.destroystokyo.paper.MaterialTags;
 import fr.entasia.sbshop.commands.ShopCmd;
 import fr.entasia.sbshop.commands.ShopReloadCmd;
+import fr.entasia.sbshop.utils.ShopCat;
 import fr.entasia.sbshop.utils.ShopItem;
+import fr.entasia.sbshop.utils.ShopProduct;
 import fr.entasia.sbshop.utils.SubShop;
 import org.bukkit.Material;
+import org.bukkit.Tag;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Map;
 
 public class Main extends JavaPlugin {
 
@@ -43,30 +49,62 @@ public class Main extends JavaPlugin {
 
 	}
 
-	private static void category(SubShop cat, String a) throws Throwable {
-		cat.items = new ArrayList<>();
+	private static void category(SubShop sub, String a) throws Throwable {
+		sub.items = new ArrayList<>();
 		ConfigurationSection cs = main.getConfig().getConfigurationSection(a);
-		if(cs==null){
-			main.getLogger().warning("Catégorie de la configuration "+a+" vide !");
-		} else{
-			cat.price_modifier = cs.getInt("price-modifier");
+		if (cs == null) {
+			main.getLogger().warning("Catégorie de la configuration " + a + " vide !");
+			return;
+		}
+		sub.price_modifier = cs.getInt("price-modifier");
 
-			ShopItem sitem;
-			ConfigurationSection cs2;
-			for(String s : cs.getConfigurationSection("items").getKeys(false)){
+		ShopItem sitem;
+		ConfigurationSection cs2;
+		for (Map.Entry<String, Object> e : cs.getConfigurationSection("items").getValues(false).entrySet()) {
+			cs2 = (ConfigurationSection) e.getValue();
 
-				cs2 = main.getConfig().getConfigurationSection(a+".items."+s);
+			sitem = new ShopItem(sub);
+			sitem.type = Material.getMaterial(cs2.getString("type").toUpperCase());
+			if (sitem.type == null) warn(sub, cs2.getString("type"), "Type invalide");
+			else if(!completeProduct(sitem, cs2))sub.items.add(sitem);
+		}
 
-				sitem = new ShopItem();
-				sitem.shop = cat;
+		ShopCat scat;
+		Field f;
+		for (Map.Entry<String, Object> e : cs.getConfigurationSection("categories").getValues(false).entrySet()) {
+			cs2 = (ConfigurationSection) e.getValue();
 
-				sitem.type = Material.getMaterial(cs2.getString("type").toUpperCase());
-				sitem.maxMeta = (short) cs2.getInt("maxMeta");
-				if(sitem.maxMeta==0) sitem.meta = (short) cs2.getInt("meta");
-				sitem.by = cs2.getInt("by", 1);
-				sitem.modifier = cs2.getInt("price-modifier", 1);
-				sitem.buyPrice = cs2.getInt("buy") * sitem.modifier * sitem.shop.price_modifier * Main.global_modifier;
-				sitem.sellPrice = cs2.getInt("sell") * sitem.modifier * sitem.shop.price_modifier * Main.global_modifier;
+			scat = new ShopCat(sub);
+			try {
+				f = Tag.class.getDeclaredField(e.getKey());
+			} catch (NoSuchFieldException ignore) {
+				try {
+					f = MaterialTags.class.getDeclaredField(e.getKey());
+				} catch (NoSuchFieldException ignore2) {
+					warn(sub, cs2.getString("type"), "Catégorie invalide : " + e.getKey());
+					continue;
+				}
+			}
+			scat.cat = (Tag<Material>) f.get(null);
+			scat.icon = scat.cat.getValues().iterator().next();
+
+			if(completeProduct(scat, cs2))sub.cats.add(scat);
+		}
+	}
+
+	private static boolean completeProduct(ShopProduct product, ConfigurationSection sec){
+		product.by = sec.getInt("by", 1);
+		product.modifier = sec.getInt("price-modifier", 1);
+		product.buyPrice = sec.getInt("buy") * product.modifier * product.shop.price_modifier * Main.global_modifier;
+		product.sellPrice = sec.getInt("sell") * product.modifier * product.shop.price_modifier * Main.global_modifier;
+		product.by_mult = 64 / product.by;
+
+		if (product.sellPrice < 0) warn(product.shop, sec.getString("type"), "Prie de vente négatif");
+		else if (product.buyPrice < 0) warn(product.shop, sec.getString("type"), "Prie d'achat négatif");
+		else if (product.buyPrice != 0 && product.sellPrice > product.buyPrice)
+			warn(product.shop, sec.getString("type"), "Prix de vente plus haut que celui d'achat");
+		else return true;
+		return false;
 
 				/*
 				sitem.by = 6;
@@ -74,22 +112,12 @@ public class Main extends JavaPlugin {
 				x <= 64/6
 				x <= 10
 				nombre max = 10
+				(ca floor si virgule)
 				*/
 
-				sitem.by_mult = 64/sitem.by;
-
-				if(sitem.type==null)warn(cat, cs2.getString("type"), sitem.meta, "Type invalide");
-				else if(sitem.sellPrice<0)warn(cat, cs2.getString("type"), sitem.meta, "Prie de vente négatif");
-				else if(sitem.buyPrice<0)warn(cat, cs2.getString("type"), sitem.meta, "Prie d'achat négatif");
-				else if(sitem.buyPrice!=0&&sitem.sellPrice>sitem.buyPrice)warn(cat, cs2.getString("type"), sitem.meta, "Prix de vente plus haut que celui d'achat");
-				else{
-					cat.items.add(sitem);
-				}
-			}
-		}
 	}
 
-	private static void warn(SubShop cat, String type, short meta, String msg){
-		main.getLogger().warning("Erreur sur l'item "+type+":"+meta+" (catégorie "+cat.name()+") : "+msg);
+	private static void warn(SubShop sub, String identifier, String msg){
+		main.getLogger().warning("Erreur sur le produit "+identifier+" (catégorie "+sub.name()+") : "+msg);
 	}
 }

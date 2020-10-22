@@ -12,6 +12,7 @@ public enum SubShop {
 	HARVEST("§5Récoltes");
 
 	public String title;
+	public ArrayList<ShopCat> cats;
 	public ArrayList<ShopItem> items;
 	public int price_modifier;
 
@@ -19,9 +20,16 @@ public enum SubShop {
 		this.title = title;
 	}
 
-	public ShopItem getItem(Material type, short meta){
+	public ShopItem getItem(Material type){
 		for(ShopItem sitem : items){
-			if(sitem.type==type&&sitem.meta==meta)return sitem;
+			if(sitem.type==type)return sitem;
+		}
+		return null;
+	}
+
+	public ShopCat getCategory(Material type){
+		for(ShopCat scat : cats){
+			if(scat.icon==type)return scat;
 		}
 		return null;
 	}

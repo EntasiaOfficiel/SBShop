@@ -1,6 +1,6 @@
 package fr.entasia.sbshop.commands;
 
-import fr.entasia.sbshop.InvsManager;
+import fr.entasia.sbshop.invs.BaseInvs;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -12,7 +12,7 @@ public class ShopCmd implements CommandExecutor {
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		if (!(sender instanceof Player)) return false;
 
-		InvsManager.openMainShop((Player) sender);
+		BaseInvs.openMainShop((Player) sender);
 
 		return true;
 	}
