@@ -10,8 +10,6 @@ public class ShopReloadCmd implements CommandExecutor {
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-		if (!(sender instanceof Player)) return false;
-
 		if(sender.hasPermission("skyblock.shop.reload")){
 			try{
 				Main.loadConfig();
