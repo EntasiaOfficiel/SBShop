@@ -95,7 +95,7 @@ public class BaseInvs {
 			else if(e.slot<36){
 				ml.sp = BaseAPI.getOnlineSP(e.player);
 				ml.sproduct = ml.shop.getItem(e.item.getType());
-				if(ml.sproduct==null){ // TODO PAS FINI ICI
+				if(ml.sproduct==null){
 					ml.sproduct = ml.shop.getCategory(e.item.getType());
 					if(ml.sproduct==null){
 						e.player.sendMessage("§cUne erreur s'est produite ! Merci de contacter un membre du Staff");
@@ -110,9 +110,9 @@ public class BaseInvs {
 					} else if (e.click == MenuClickEvent.ClickType.RIGHT) {
 						if (ml.sproduct.sellPrice != 0) BuySellInvs.openSellShop(e.player, ml);
 					} else {
-						ServerUtils.permMsg("log.shoperror", "§cShop : Action de click non reconnue !");
 						e.player.sendMessage("§cUne erreur s'est produite, contacte un membre du Staff ! (No such action)");
 						e.player.closeInventory();
+						ServerUtils.permMsg("log.shoperror", "§cShop : "+e.player+" a fait une action de click non reconnue !");
 					}
 				}
 			}
@@ -143,10 +143,13 @@ public class BaseInvs {
 //		return;
 
 		if(min<sub.cats.size()){
+
+			// for line change
 			int temp = count%9;
 			if(temp!=0){
 				count+=9-(temp);
 			}
+
 			ite = iterator(sub.cats, min);
 			while(count<36){
 				if(!ite.hasNext()){

@@ -31,8 +31,7 @@ public class BuySellInvs {
                 if (e.slot == 11){
                     itemNum = ml.sproduct.by;
                     price = ml.sproduct.sellPrice;
-                }
-                else if (e.slot == 15){
+                }else if (e.slot == 15){
                     price = ml.sproduct.sellPrice*ml.sproduct.by_mult;
                     itemNum = ml.sproduct.by*ml.sproduct.by_mult;
                 }
@@ -241,8 +240,7 @@ public class BuySellInvs {
                     }else{
                         e.player.sendMessage("§cUne erreur s'est produite, contacte un membre du Staff ! (No such action)");
                         e.player.closeInventory();
-                        ServerUtils.permMsg("log.shoperror", "§cShop : Action de click non reconnue !");
-                    }
+                        ServerUtils.permMsg("log.shoperror", "§cShop : "+e.player+" a fait une action de click non reconnue !"); }
                 }else{
                     e.player.sendMessage("§cUne erreur s'est produite ! Merci de contacter un membre du Staff");
                     ServerUtils.permMsg("errorlog", "§cShop : Item invalide demandé : "+e.item.getType());
