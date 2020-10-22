@@ -1,7 +1,9 @@
 name: SBShop
 version: '-1'
 api-version: '1.15'
-author: Ichii
+authors:
+  - Ichii
+  - iTrooz_
 main: fr.entasia.sbshop.Main
 depend: [Libraries, SkyCore]
 

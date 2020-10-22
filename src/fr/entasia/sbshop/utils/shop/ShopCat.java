@@ -10,4 +10,5 @@ public class ShopCat extends ShopProduct {
 	public ShopCat(SubShop shop){
 		this.shop = shop;
 	}
+
 }

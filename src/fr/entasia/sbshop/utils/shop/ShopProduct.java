@@ -10,7 +10,6 @@ public abstract class ShopProduct {
 	public int by;
 	public int by_mult = 1; // Multiplicateur seulement
 
-
 	public int buyPrice;
 	public int sellPrice;
 

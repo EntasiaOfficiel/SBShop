@@ -215,11 +215,9 @@ public class BuySellInvs {
             MenuLink ml = (MenuLink)e.data;
             if (e.slot == 31)BaseInvs.openSubShop(e.player, ml.shop, 0);
             else if(e.slot<17){
-                ml.sproduct = ml.shop.getItem(e.item.getType());
-                if(ml.sproduct ==null){
-                    e.player.sendMessage("§cUne erreur s'est produite ! Merci de contacter un membre du Staff");
-                    ServerUtils.permMsg("errorlog", "Item invalide demandé dans le shop : "+e.item.getType());
-                }else{
+                ml.selected = e.item.getType();
+                ShopCat scat = (ShopCat)ml.sproduct;
+                if(scat.cat.isTagged(ml.selected)){
                     ml.sp = BaseAPI.getOnlineSP(e.player);
                     if(ml.sproduct.buyPrice<=1){
                         e.player.sendMessage("§cUne erreur s'est produite, contacte un membre du Staff ! (Invalid buy price)");
@@ -231,10 +229,13 @@ public class BuySellInvs {
                     }else if(e.click==MenuClickEvent.ClickType.RIGHT){
                         if (ml.sproduct.sellPrice != 0) openSellShop(e.player, ml);
                     }else{
-                        ServerUtils.permMsg("log.shoperror", "§cShop : Action de click non reconnue !");
                         e.player.sendMessage("§cUne erreur s'est produite, contacte un membre du Staff ! (No such action)");
                         e.player.closeInventory();
+                        ServerUtils.permMsg("log.shoperror", "§cShop : Action de click non reconnue !");
                     }
+                }else{
+                    e.player.sendMessage("§cUne erreur s'est produite ! Merci de contacter un membre du Staff");
+                    ServerUtils.permMsg("errorlog", "§cShop : Item invalide demandé : "+e.item.getType());
                 }
             }
         }
