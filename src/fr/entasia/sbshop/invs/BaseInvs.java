@@ -54,7 +54,7 @@ public class BaseInvs {
 		item.setItemMeta(meta);
 		inv.setItem(0, item);
 
-		item = new ItemStack(Material.GRASS);
+		item = new ItemStack(Material.GRASS_BLOCK);
 		meta = item.getItemMeta();
 		meta.setDisplayName("§aBlocs");
 		item.setItemMeta(meta);
