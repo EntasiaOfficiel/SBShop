@@ -27,14 +27,17 @@ public class BuySellInvs {
             if (e.slot == 0) BaseInvs.openSubShop(e.player, ml.shop, ml.page);
             else{
                 int itemNum;
-                int pay = ml.sproduct.buyPrice;
-                if (e.slot == 11) itemNum = ml.sproduct.by;
+                int price;
+                if (e.slot == 11){
+                    itemNum = ml.sproduct.by;
+                    price = ml.sproduct.sellPrice;
+                }
                 else if (e.slot == 15){
+                    price = ml.sproduct.sellPrice*ml.sproduct.by_mult;
                     itemNum = ml.sproduct.by*ml.sproduct.by_mult;
-                    pay*=ml.sproduct.by_mult;
                 }
                 else return;
-                if (ml.sp.getMoney() < pay) {
+                if (ml.sp.getMoney() < price) {
                     e.player.sendMessage("§cTu n'as pas assez d'argent !");
                     e.player.closeInventory();
                 }else{
@@ -49,7 +52,7 @@ public class BuySellInvs {
                             return;
                         }
                     }
-                    ml.sp.withdrawMoney(pay);
+                    ml.sp.withdrawMoney(price);
                     e.player.getInventory().addItem(new ItemStack(ml.selected, itemNum));
                 }
             }
@@ -119,12 +122,19 @@ public class BuySellInvs {
         @Override
         public void onMenuClick(MenuClickEvent e) {
             MenuLink ml = (MenuLink) e.data;
-            int itemNum;
-            int collect = 0;
             if (e.slot == 0) BaseInvs.openSubShop(e.player, ml.shop, ml.page);
             else{
-                if (e.slot == 11) itemNum = ml.sproduct.by;
-                else if (e.slot == 15) itemNum = ml.sproduct.by*ml.sproduct.by_mult;
+                int itemNum; // number to collect
+                int collect = 0; // collected
+                int price;
+                if (e.slot == 11){
+                    itemNum = ml.sproduct.by;
+                    price = ml.sproduct.sellPrice;
+                }
+                else if (e.slot == 15){
+                    price = ml.sproduct.sellPrice*ml.sproduct.by_mult;
+                    itemNum = ml.sproduct.by*ml.sproduct.by_mult;
+                }
                 else return;
                 HashMap<Integer, ItemStack> real = new HashMap<>();
                 for(Map.Entry<Integer, ? extends ItemStack> item : e.player.getInventory().all(ml.selected).entrySet()) {
@@ -143,7 +153,7 @@ public class BuySellInvs {
                             break;
                         }
                     }
-                    ml.sp.addMoney(ml.sproduct.sellPrice * itemNum);
+                    ml.sp.addMoney(price);
                 }else e.player.sendMessage("§cTu n'as pas assez d'items dans ton inventaire !");
             }
         }
